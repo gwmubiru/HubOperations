@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+
+class Staff extends Model {
+	//specify the table to be used to store the equipment
+	protected $table = "staff";
+	//specify the fields that must be filled
+    protected $fillable = [
+        'facilityid', 'firstname', 'lastname', 'othernames', 'emailaddress', 'telephonenumber', 'drivingpermit', 'designation', 'type', 'nationalid'
+    ];
+	
+	public static $rules = [
+		'facilityid' => 'required',
+		'firstname' => 'required',
+		'lastname' => 'required',
+		'telephonenumber'=>'required',
+		'email' => 'required|email|unique'
+	];
+	/**
+	* Relationship with facility/hub
+	*/
+	public function facility()
+	{
+		return $this->belongsTo('App\Models\Facility', 'facilityid', 'id');
+	}
+	/**
+	* Relationship with bike
+	*/
+	public function bike()
+	{
+		return $this->hasOne('App\Models\Equipment', 'id', 'motorbikeid');
+	}
+}
