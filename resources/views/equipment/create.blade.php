@@ -4,11 +4,16 @@
 
 @section('js')
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
-<script src="{{ asset('js/jquery.inputmask.js') }}"></script>
-<script src="{{ asset('js/jquery.inputmask.date.extensions.js') }}"></script>
-<script src="{{ asset('js/jquery.inputmask.extensions.js') }}"></script>
+
  <script>
 	$(document).ready(function() {
+		
+		$('#deliveredtohubon, #purchasedon').datepicker({
+		   format: 'mm/dd/yyyy',
+           endDate: '+0d',
+		   autoclose: true
+		});
+		
 		$('#equipmentform').bootstrapValidator({
        
         fields: {
@@ -114,6 +119,20 @@
 
   })
 </script>
+<script>
+	(function($) {
+		$.fn.bootstrapValidator.validators.greaterDate = {
+			validate: function(validator, $field, options) {
+				var value = $field.val();
+				if (value === '') {
+					return true;
+				}
+	
+				return true;
+			}
+		};
+}(window.jQuery));
+</script>
 @append
 
 @section('content')
@@ -195,7 +214,7 @@
                   <label for="purchasedon" class="col-sm-3 control-label">{{ Form::label('purchasedon', 'Purchased on') }}</label>
                   <div class="col-sm-9">
                     
-                    <input name="purchasedon" id="purchasedon" class="form-control" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask="" type="text">
+                    <input name="purchasedon" id="purchasedon" class="form-control"  type="text">
                   </div>
                 </div>
                 
@@ -203,7 +222,7 @@
                   <label for="deliveredtohubon" class="col-sm-3 control-label">{{ Form::label('deliveredtohubon', 'Delivered to Hub on') }}</label>
                   <div class="col-sm-9">
                     
-                    <input name="deliveredtohubon" id="deliveredtohubon" class="form-control" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask="" type="text">
+                    <input name="deliveredtohubon" id="deliveredtohubon" class="form-control"  type="text">
                   </div>
                 </div>
                 

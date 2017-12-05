@@ -11,13 +11,13 @@
 <script src="{{ asset('js/jquery.slimscroll.min.js') }}"></script> 
 @append 
 <!-- Info boxes -->
- @role('Admin','Regional_hub_coordinator','Program_officer')
+ @role(['Admin','Coordinator','Regional_hub_coordinator'])
 <div class="row">
   
   <!-- /.col -->
   <div class="col-md-3 col-sm-6 col-xs-12">
     <div class="info-box"> <span class="info-box-icon bg-red"><i class="fa fa-motorcycle"></i></span>
-      <div class="info-box-content"> <span class="info-box-text"><a class="link-tip" href="#" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Bikes Broken down">Bikes Broken down</a></span> <span class="info-box-number">16</span> </div>
+      <div class="info-box-content"> <span class="info-box-text"><a class="link-tip" href="{{url('equipment/list/status/2')}}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Bikes Broken down">Bikes Broken down</a></span> <span class="info-box-number">{{count($equipment_broken_down)}}</span> </div>
       <!-- /.info-box-content --> 
     </div>
     <!-- /.info-box --> 
@@ -25,7 +25,7 @@
   <!-- /.col --> 
    <div class="col-md-3 col-sm-6 col-xs-12">
     <div class="info-box"> <span class="info-box-icon bg-yellow"><i class="fa fa-motorcycle"></i></span>
-      <div class="info-box-content"> <span class="info-box-text"><a class="link-tip" href="#" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Bikes without Service Contract">Bikes without Service Contract</a></span> <span class="info-box-number">17</span> </div>
+      <div class="info-box-content"> <span class="info-box-text"><a class="link-tip" href="{{url('equipment/list/service/0')}}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Bikes without Service Contract">Bikes without Service Contract</a></span> <span class="info-box-number">{{count($equipment_no_service)}}</span> </div>
       <!-- /.info-box-content --> 
     </div>
     <!-- /.info-box --> 
@@ -52,7 +52,7 @@
 </div>
 @endrole
 <!-- /.row -->
- @role('Admin','Regional_hub_coordinator','Program_officer') 
+ @role(['Admin','Regional_hub_coordinator','Coordinator']) 
 <div class="row panel-body">
   <div class="btn-group container col-md-12">
     <div class="row mid-dashboard">
@@ -77,14 +77,12 @@
         <div class="panel panel-default"> <span class="fa fa-motorcycle icon"></span> <br>
           <span class="nav_title">Manage Bikes</span> </div>
         </a> </div>
-      <div class="btn-group container col-md-4"> <a class="link-tip" href="{{ url('staff/list/2') }}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Click here to create new, update or view a list of Staff members">
-        <div class="panel panel-default"> <span class="fa fa-users icon"></span> <br>
-          <span class="nav_title">Manage Staff Members</span> </div>
-        </a> </div>
+      
       <div class="btn-group container col-md-4"> <a class="link-tip" href="{{ url('staff/list/1') }}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Click here to create new, update or view a list of hubs">
         <div class="panel panel-default"> <span class="fa fa-cogs icon"></span> <br>
           <span class="nav_title">Manage Sample Transporters</span> </div>
         </a> </div>
+        <div class="btn-group container col-md-4"> </div>
     </div>
   </div>
 </div>

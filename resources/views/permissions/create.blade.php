@@ -1,35 +1,61 @@
 {{-- \resources\views\permissions\create.blade.php --}}
 @extends('layouts.app')
 
-@section('title', '| Create Permission')
-
+@section('title', 'Create Permission')
+@section('js')
+<script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
+ <script>
+	$(document).ready(function() {
+		$('#permissionform').bootstrapValidator({
+       
+        fields: {
+			name: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter the permission name'
+                        }
+                    }
+                }
+		}//endo of validation rules
+    });// close form validation function
+	});
+</script>
+@append
 @section('content')
 
-<div class='col-lg-4 col-lg-offset-4'>
+<div class="box box-info"> 
+@if ($errors->any())
+  <div class="alert alert-danger">
+    <ul>
+      @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+  @endif
 
-    <h1><i class='fa fa-key'></i> Add Permission</h1>
-    <br>
-
-    {{ Form::open(array('url' => 'permissions')) }}
-
+    {{ Form::open(array('id'=>'permissionform''url' => 'permissions')) }}
+<div class="box-body">
     <div class="form-group">
         {{ Form::label('name', 'Name') }}
         {{ Form::text('name', '', array('class' => 'form-control')) }}
-    </div><br>
-    @if(!$roles->isEmpty()) //If no roles exist yet
-        <h4>Assign Permission to Roles</h4>
+    </div>
+    @if(!$roles->isEmpty()) 
+        <h2>Assign Permission to Roles</h2>
 
         @foreach ($roles as $role) 
             {{ Form::checkbox('roles[]',  $role->id ) }}
-            {{ Form::label($role->name, ucfirst($role->name)) }}<br>
+            {{ Form::label($role->name, ucfirst($role->display_name)) }}<br>
 
         @endforeach
     @endif
-    <br>
-    {{ Form::submit('Add', array('class' => 'btn btn-primary')) }}
+    </div>
+  <!--/box-body -->
+  <div class="box-footer"> <a class="btn btn-sm btn-danger" href="{{ URL::previous() }}">Cancel</a>
+    {{ Form::submit('Add Permission', array('class' => 'btn btn-sm btn-info pull-right')) }}
 
     {{ Form::close() }}
-
+</div>
 </div>
 
 @endsection

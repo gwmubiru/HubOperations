@@ -7,15 +7,15 @@ use Illuminate\Http\Request;
 use Auth;
 
 //Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use \App\Models\Role;
+use \App\Models\Permission;
 
 use Session;
 
 class PermissionController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'isAdmin']); //isAdmin middleware lets only users with a //specific permission permission to access these resources
+        //$this->middleware(['auth', 'isAdmin']); //isAdmin middleware lets only users with a //specific permission permission to access these resources
     }
 
     /**
@@ -50,28 +50,29 @@ class PermissionController extends Controller {
         $this->validate($request, [
             'name'=>'required|max:40',
         ]);
-
-        $name = $request['name'];
-        $permission = new Permission();
-        $permission->name = $name;
-
-        $roles = $request['roles'];
-
-        $permission->save();
-
-        if (!empty($request['roles'])) { //If one or more role is selected
-            foreach ($roles as $role) {
-                $r = Role::where('id', '=', $role)->firstOrFail(); //Match input role to db record
-
-                $permission = Permission::where('name', '=', $name)->first(); //Match input //permission to db record
-                $r->givePermissionTo($permission);
-            }
-        }
-
-        return redirect()->route('permissions.index')
-            ->with('flash_message',
-             'Permission'. $permission->name.' added!');
-
+		try {
+		   \DB::transaction(function() use($request){
+				$name = $request['name'];
+				$permission = new Permission();
+				$permission->display_name = generateSlug($name);
+				$permission->name = $name;
+				$roles = $request['roles'];
+		
+				$permission->save();
+		
+				if (!empty($request['roles'])) { //If one or more role is selected
+					foreach ($roles as $role) {
+						$r = Role::where('id', '=', $role)->firstOrFail(); //Match input role to db record
+						$r->perms()->sync($permission->id);
+					}
+				}
+							
+		   });
+		   return redirect()->route('permissions.index')->with('flash_message',
+					 'Permission'. $permission->display_name.' added!');
+		 }catch (\Exception $e) {
+			print_r($e);
+		}
     }
 
     /**
@@ -108,8 +109,9 @@ class PermissionController extends Controller {
         $this->validate($request, [
             'name'=>'required|max:40',
         ]);
-        $input = $request->all();
-        $permission->fill($input)->save();
+		$permission->display_name = $request->name;
+		$permission->name = generateSlug($request->name, '_');
+        $permission->save();
 
         return redirect()->route('permissions.index')
             ->with('flash_message',

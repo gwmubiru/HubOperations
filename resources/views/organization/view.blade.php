@@ -52,6 +52,9 @@
               </tbody>
             </table>
           </div>
+              <div class="box-footer clearfix"> <a href="{{ URL::previous() }}" class="btn btn-default pull-left">Back</a>
+              
+                    <a href="{{route('organization.edit', $organization->id)}}" class="btn btn-warning pull-right">Update IP</a></div>
         </div>
         <!-- /.tab-pane -->
         <div class="tab-pane" id="tab_2">
@@ -179,9 +182,9 @@
                   <!-- /.table-responsive --> 
                 </div>
                 <!-- /.box-body -->
-                <div class="box-footer clearfix"> @if(!$pmtc)<a href="{{url('contact/new/category/1/type/3/obj', ['obj' => $organization->id])}}" class="btn btn-sm btn-info btn-flat pull-left">Add Contact</a>@else 
-                <a href="{{url('contact/new/category/1/type/3/obj', ['obj' => $organization->id])}}" class="btn btn-sm btn-info btn-flat pull-left">Change to New Contact</a>
-                <a href="{{route('contact.edit', $careandtreat->id)}}" class="btn btn-sm btn-warning btn-flat pull-right">Update Contact</a> @endif</div>
+                <div class="box-footer clearfix"> @if(!$pmtc)<a href="{{url('contact/new/category/1/type/3/obj', ['obj' => $organization->id])}}" class="btn btn-sm btn-info  pull-left">Add Contact</a>@else 
+                <a href="{{url('contact/new/category/1/type/3/obj', ['obj' => $organization->id])}}" class="btn btn-sm btn-info  pull-left">Change to New Contact</a>
+                <a href="{{route('contact.edit', $careandtreat->id)}}" class="btn btn-sm btn-warning  pull-right">Update Contact</a> @endif</div>
                 <!-- /.box-footer --> 
               </div>
             </div>

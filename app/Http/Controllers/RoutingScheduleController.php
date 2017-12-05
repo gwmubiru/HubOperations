@@ -134,7 +134,7 @@ class RoutingScheduleController extends Controller {
 			//echo 'bifu';
 			//exit;
 			//send the hubid instead so that you can pick schedule for the hub
-			return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid));
+			return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid.'#tab_4'));
 		}catch (\Exception $e) {
 			print_r('faild to save'.$e);
 			exit;
@@ -288,7 +288,7 @@ class RoutingScheduleController extends Controller {
 			//echo 'bifu';
 			//exit;
 			//send the hubid instead so that you can pick schedule for the hub
-			return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid));
+			return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid.'#tab_4'));
 		}catch (\Exception $e) {
 			print_r('faild to save'.$e);
 			exit;

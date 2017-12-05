@@ -31,7 +31,7 @@
       
 	//get all facilities
 	function getAllHubs(){
-		$hubs = array_merge_maintain_keys(array('' => 'Select One'), \App\Models\Facility::where('parentid', '!=', '')->pluck('name', 'id'));
+		$hubs = array_merge_maintain_keys(array('' => 'Select One'), \App\Models\Facility::where('parentid', '=', NULL)->pluck('name', 'id'));
 		return $hubs;
 	}
 	
@@ -56,6 +56,10 @@
 	function getAllIps(){
 		return \App\Models\Organization::where('type', 1)->pluck('name','id');
 	}
+	function getBikesForHub($hubid){
+		return \App\Models\Euipment::where('hubid', $hubid)->pluck('name','id');
+	}
+	
 	/*
 	* Get name and id of all hubs at leves H/iv, hospital or RRH which are not yet hubs
 	*/
@@ -78,8 +82,31 @@
 		}
 		return $sampletransporters;
 	}
+	
 	function getFacilitiesforHub($hubid){
 		$facilities = \App\Models\Facility::where('parentid', '=', $hubid)->pluck('name', 'id');
 		return $facilities;
+	}
+	
+	function getMechanicforHub($id){
+		$mechanics = '';
+		if($id){
+			$mechanics = \App\Models\Contact::where('type', '=', 1)->where('category', 4)->where('isactive', 1)->where('hubid', $id)->pluck('firstname', 'id');
+		}
+		return $mechanics;
+	}
+	
+	function getUnassignedBikesforHub($hubid){
+		$valuesquery = "SELECT id as optionvalue, numberplate as optiontext FROM equipment  
+		WHERE  hubid = '".$hubid."' ORDER BY optiontext";
+		return getOptionValuesFromDatabaseQuery($valuesquery);
+	}
+	
+	function getGenerateHtmlforAjaxSelect($options, $empty_string = 'Select One'){
+		$select_string = '<option value="">'.$empty_string.'</option>';
+		foreach($options as $key => $value){
+			$select_string .= '<option value="'.$key.'">'.$value.'</option>';
+		}
+		return $select_string;
 	}
 ?>

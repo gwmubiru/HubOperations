@@ -8,7 +8,7 @@ class RoutingSchedule extends Model {
 	protected $table = "routingschedule";
 	//specify the fields that must be filled
     protected $fillable = [
-        'facilityid', 'dayoftheweek', 'hubid','createdby'
+        'facilityid', 'dayoftheweek', 'hubid','createdby', 'status', 'isactive','thedate', 'bikeid'
     ];
 	
 	public static $rules = [
@@ -22,6 +22,13 @@ class RoutingSchedule extends Model {
 	{
 		return $this->belongsTo('App\Models\Facility', 'hubid', 'id');
 	}
+	/**
+	* Relationship with bike
+	*/
+	public function bike(){
+		return $this->belongsTo('App\Models\Eqipment', 'bikeid', 'id');
+	}
+	
 	/**
 	* Relationship with hub
 	*/

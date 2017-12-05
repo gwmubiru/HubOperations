@@ -67,11 +67,31 @@
         </div>
         <!-- /.col --> 
       </div>
+      
     </form>
     <div class="social-auth-links text-center"> </div>
     <!-- /.social-auth-links --> 
     
     <a href="{{ route('password.request') }}">I forgot my password</a><br>
+    <div class="row">
+      	<div class="col-md-12"> 
+        <h3>Test Login Credentials</h3>
+        	<ul>
+            	<li><strong>National Coordinator</strong>
+                	<ul>
+                    	<li>Username: officer@dev.com</li>
+                        <li>Password: password</li>
+                    </ul>
+                </li>
+                <li><strong>Hub In-charge</strong>
+                <ul>
+                    	<li>Username: incharge@dev.com</li>
+                        <li>Password: password</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+      </div>
   </div>
   <!-- /.login-box-body --> 
 </div>

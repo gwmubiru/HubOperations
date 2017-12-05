@@ -25,9 +25,7 @@
                 },
 					email: {          
 				validators: {
-							notEmpty: {
-								message: 'Enter an email address'
-							},
+							
 							regexp: {
 							  regexp: '^[^@\\s]+@([^@\\s]+\\.)+[^@\\s]+$',
 							  message: 'The value is not a valid email address'

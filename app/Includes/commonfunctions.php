@@ -337,13 +337,27 @@ function createHTMLListFromArray($array) {
 			$links .= '<li> <a href="'.route('facility.create').'">New facility</a></li>';
 		}elseif(strpos($currenturl, 'equipment') != false){
 			$links .= '<li> <a href="'.route('equipment.index').'">All bikes</a></li>';
-			$links .= '<li> <a href="'.route('equipment.create').'">New bike</a></li>';
+			if(!(Auth::user()->hasRole('In_charge'))){
+				$links .= '<li> <a href="'.route('equipment.create').'">New bike</a></li>';
+			}
 		}elseif(strpos($currenturl, 'staff/list/2') != false || strpos($currenturl, 'staff/new/2') != false){
 			$links .= '<li> <a href="'.url('staff/list/2').'">All staff members</a></li>';
 			$links .= '<li> <a href="'.url('staff/new/2').'">New staff member</a></li>';
 		}elseif(strpos($currenturl, 'staff/list/1') != false || strpos($currenturl, 'staff/new/1') != false){
 			$links .= '<li> <a href="'.url('staff/list/1').'">All sample transporters</a></li>';
 			$links .= '<li> <a href="'.url('staff/new/1').'">New transporter</a></li>';
+		}elseif(strpos($currenturl, 'roles') != false || strpos($currenturl, 'permissions') != false || strpos($currenturl, 'users') != false){
+			if(!(Auth::user()->hasRole('Admin'))){
+				$links .= '<li> <a href="'.route('roles.index').'">All roles</a></li>';
+				$links .= '<li> <a href="'.route('roles.create').'">Create role</a></li>';
+				$links .= '<li> <a href="'.route('permissions.index').'">All permissions</a></li>';
+				$links .= '<li> <a href="'.route('permissions.create').'">Add Permission</a></li>';				
+			}
+			if(!(Auth::user()->hasRole(['In_charge', 'Admin']))){
+				$links .= '<li> <a href="'.route('users.index').'">All users</a></li>';
+				$links .= '<li> <a href="'.route('users.create').'">New user</a></li>';
+			}
+			
 		}
 		return $links;
 	}
@@ -392,6 +406,7 @@ function createHTMLListFromArray($array) {
 	function getContact($obj, $cat,$type,$table_attribute = 'organizationid'){
 		return \App\Models\Contact::where($table_attribute, $obj)
 											->where('category',$cat)
+											->where('isactive',1)
 											->where('type',$type)->first();
 	}
 	function getHubScheduleforaDay($day, $hubid){
@@ -411,4 +426,68 @@ function createHTMLListFromArray($array) {
 		}
 		return $ids_array;
 	}
+	function getActionTakenOnBike($breakdownid){
+		return \App\Models\EquipmentBreakDownAction::where('equipmentbreakdownid', $breakdownid)->paginate(10);
+		
+	}
+	function getBikeBreakDownReason($breakdownid){
+		return \App\Models\EquipmentBreakDownReason::where('equipmentbreakdownid', $breakdownid)->paginate(10);
+	}
+	
+		/**
+		 * Generate an array of dates for the period, in this case for a week
+		 * 
+		 * @return Array 
+		 */
+		function getDatesInPeriod(){
+			$weekendingdate = new DateTime();
+			//$startdate = new DateTime();
+			//$day = $startdate->modify("sunday ".$aconfig->timesheet->minweekendingdate." weeks ago");
+			for ($i = 0; $i < 7; $i++) {
+				$days[$weekendingdate->format("U")] = $weekendingdate->format("Y-m-d");  
+				$weekendingdate->modify("-1 day");
+			}
+			ksort($days); 
+			return  $days;
+		}
+		
+		/**
+		 * Get the date for the start of the timesheet period, in this case a week which starts on a Monday and ends on a Sunday
+		 *
+		 * @return The time stamp for the week ending date
+		 */
+		function getPeriodStartingDateTimestamp($date=NULL) {
+			 $date_stamp = strtotime(date('Y-m-d', strtotime($date)));
+			 //check date is sunday or monday
+			$stamp = date('l', $date_stamp);      
+		
+			if($stamp == 'Mon'){
+				$week_start = $date;
+			}else{
+				$week_start = date('Y-m-d', strtotime('Last Monday', $date_stamp));
+			}
+		
+		
+			if($stamp == 'Sunday'){
+				$week_end = $date;
+			}else{
+				$week_end = date('Y-m-d', strtotime('Next Sunday', $date_stamp));
+			}        
+			return array($week_start, $week_end); 
+		}
+		function checkifPermissioninArray($key, $arr){
+			if(!empty($arr)){
+				foreach($arr as $ar){
+					if($ar->id == $key){
+						return 1;
+					}
+				}
+			}
+			return 0;
+		}
+		
+	function generateSlug($str, $delimiter = '-'){
+			$slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
+			return $slug;
+		} 
 ?>

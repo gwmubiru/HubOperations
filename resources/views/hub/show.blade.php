@@ -1,15 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'View Hub')
+@section('title', 'View '.$hub->hubname.' Details')
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}">
 @append
 @section('listpagejs')
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('js/jquery.stickytabs.js') }}"></script>
     <script>
+		
 		$(document).ready(function() {
 			$('#facilitylist').DataTable();
+			$('.nav-tabs').stickyTabs();
 		} );
+		$(function() {
+	var options = { 
+			selectorAttribute: "data-target",
+			backToTop: true
+		};
+		$('.nav-tabs').stickyTabs( options );
+	});
 	</script>
 @append
 @section('content')
@@ -34,7 +44,7 @@
       <tbody>
       <tr>
           <td>Name</td>
-          <td>{{ $hub->name }}</td>
+          <td>{{ $hub->hubname }}</td>
         </tr>
         <tr>
           <td>IP</td>
@@ -54,6 +64,9 @@
         </tr>        
       </tbody>
     </table>
+    <div class="box-footer clearfix"> <a href="{{ URL::previous() }}" class="btn btn-default pull-left">Back</a>
+              
+                    <a href="{{route('hub.edit', $hub->id)}}" class="btn btn-warning pull-right">Update Hub</a></div>
     </div>
         </div>
         <!-- /.tab-pane -->
@@ -105,6 +118,24 @@
                           <td class="contact-label">Telephone Number</td>
                           <td>{{$incharge->telephonenumber}}</td>
                         </tr>
+                        @if(!empty($incharge->phone2))
+                        <tr>
+                          <td class="contact-label">Telephone Number2</td>
+                          <td>{{$incharge->phone2}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($incharge->phone3))
+                        <tr>
+                          <td class="contact-label">Telephone Number3</td>
+                          <td>{{$incharge->phone3}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($incharge->phone4))
+                        <tr>
+                          <td class="contact-label">Telephone Number4</td>
+                          <td>{{$incharge->phone4}}</td>
+                        </tr>
+                        @endif
                         <tr>
                           <td class="contact-label">Email Address</td>
                           <td>{{$incharge->emailaddress}}</td>
@@ -146,6 +177,24 @@
                           <td class="contact-label">Telephone Number</td>
                           <td>{{$hubcordinator->telephonenumber}}</td>
                         </tr>
+                        @if(!empty($hubcordinator->phone2))
+                        <tr>
+                          <td class="contact-label">Telephone Number2</td>
+                          <td>{{$hubcordinator->phone2}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($hubcordinator->phone3))
+                        <tr>
+                          <td class="contact-label">Telephone Number3</td>
+                          <td>{{$hubcordinator->phone3}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($hubcordinator->phone4))
+                        <tr>
+                          <td class="contact-label">Telephone Number4</td>
+                          <td>{{$hubcordinator->phone4}}</td>
+                        </tr>
+                        @endif
                         <tr>
                           <td class="contact-label">Email Address</td>
                           <td>{{$hubcordinator->emailaddress}}</td>
@@ -189,6 +238,24 @@
                           <td class="contact-label">Telephone Number</td>
                           <td>{{$labmanager->telephonenumber}}</td>
                         </tr>
+                        @if(!empty($labmanager->phone2))
+                        <tr>
+                          <td class="contact-label">Telephone Number2</td>
+                          <td>{{$labmanager->phone2}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($labmanager->phone3))
+                        <tr>
+                          <td class="contact-label">Telephone Number3</td>
+                          <td>{{$labmanager->phone3}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($labmanager->phone4))
+                        <tr>
+                          <td class="contact-label">Telephone Number4</td>
+                          <td>{{$labmanager->phone4}}</td>
+                        </tr>
+                        @endif
                         <tr>
                           <td class="contact-label">Email Address</td>
                           <td>{{$labmanager->emailaddress}}</td>
@@ -230,6 +297,24 @@
                           <td class="contact-label">Telephone Number</td>
                           <td>{{$vlfocalperson->telephonenumber}}</td>
                         </tr>
+                        @if(!empty($vlfocalperson->phone2))
+                        <tr>
+                          <td class="contact-label">Telephone Number2</td>
+                          <td>{{$vlfocalperson->phone2}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($vlfocalperson->phone3))
+                        <tr>
+                          <td class="contact-label">Telephone Number3</td>
+                          <td>{{$vlfocalperson->phone3}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($vlfocalperson->phone4))
+                        <tr>
+                          <td class="contact-label">Telephone Number4</td>
+                          <td>{{$vlfocalperson->phone4}}</td>
+                        </tr>
+                        @endif
                         <tr>
                           <td class="contact-label">Email Address</td>
                           <td>{{$vlfocalperson->emailaddress}}</td>
@@ -273,6 +358,24 @@
                           <td class="contact-label">Telephone Number</td>
                           <td>{{$eidfocalperson->telephonenumber}}</td>
                         </tr>
+                        @if(!empty($eidfocalperson->phone2))
+                        <tr>
+                          <td class="contact-label">Telephone Number2</td>
+                          <td>{{$eidfocalperson->phone2}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($eidfocalperson->phone3))
+                        <tr>
+                          <td class="contact-label">Telephone Number3</td>
+                          <td>{{$eidfocalperson->phone3}}</td>
+                        </tr>
+                        @endif
+                        @if(!empty($eidfocalperson->phone4))
+                        <tr>
+                          <td class="contact-label">Telephone Number4</td>
+                          <td>{{$eidfocalperson->phone4}}</td>
+                        </tr>
+                        @endif
                         <tr>
                           <td class="contact-label">Email Address</td>
                           <td>{{$eidfocalperson->emailaddress}}</td>

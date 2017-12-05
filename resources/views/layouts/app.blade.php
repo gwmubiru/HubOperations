@@ -20,6 +20,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
  @yield('css')
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('css/AdminLTE.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/bootstrap-datepicker.min.css') }}">
   <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
         page. However, you can choose any other skin. Make sure you
         apply the skin class to the body tag so the changes take effect. -->
@@ -129,7 +130,26 @@ desired effect
         <!-- Optionally, you can add icons to the links -->
         <li class="active"><a href="{{ route('dashboard.index') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
         <!--<li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li> -->
-       @role('Admin','Regional_hub_coordinator','Program_officer') 
+       @role(['Coordinator','Admin']) 
+       	<li class="treeview">
+          <a href="#"><i class="fa fa-user"></i> <span>Manage Users</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+          </a> 
+          
+          <ul class="treeview-menu">
+          @role('Admin')
+          	<li><a href="{{ route('roles.create') }}">Create Role</a></li>
+           	<li><a href="{{ route('roles.index') }}">View All Roles</a></li>
+           @endrole
+            <li><a href="{{ route('users.create') }}">Create User</a></li>
+           	<li><a href="{{ route('users.index') }}">View All Users</a></li>
+          </ul>
+          
+        </li>
+       @endrole
+       @role(['Coordinator','Admin','Regional_hub_coordinator']) 
        <li class="treeview">
           <a href="#"><i class="fa fa-institution"></i> <span>Manage IPs</span>
             <span class="pull-right-container">
@@ -177,13 +197,15 @@ desired effect
           </a>
           <ul class="treeview-menu">
             @if (!Auth::guest())
-                @role('Admin','Regional_hub_coordinator','Program_officer') 
+                @role(['Admin','Regional_hub_coordinator','Coordinator']) 
                 	<li><a href="{{ route('equipment.create') }}">Add New Bike</a></li>
                 @endrole
                 	<li><a href="{{ route('equipment.index') }}">View All Bikes</a></li>
                 @role('In_charge') 
-                	<li><a href="{{ route('routingschedule.show', ['id' => Auth::user()->hubid]) }}">Our Routing Schedule</a></li>
-                    <li><a href="{{ route('dailyrouting.create') }}">Add Daily Route</a></li>
+                	<li><a href="{{ route('routingschedule.show', ['id' => Auth::user()->hubid]) }}">Routing Schedule</a></li>
+                    <li><a class="" href="javascript:void(0)"
+                        data-toggle="modal" data-target="#weekend-update">Add Daily Route</a></li>
+                    
                 @endrole
           @endif
 
@@ -324,6 +346,35 @@ desired effect
   immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="weekend-update">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Select Date</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="box box-info no-border"> 
+      	{{ Form::open(array('url' => 'dailyrouting/setweekendingdates', 'class' => 'form-horizontal', 'id' => 'week-ending')) }}
+  {{ csrf_field() }}
+  
+  			<div class="form-group">
+              <label for="dateofweek" class="col-sm-3 control-label">{{ Form::label('dateofweek', 'Date') }}</label>
+              <div class="col-sm-9">
+                <input name="dateofweek" id="dateofweek" class="form-control" type="text">
+              </div>
+            </div>
+  			<div class="box-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </button>
+            {{ Form::submit('Continue', array('class' => 'btn btn-info pull-right')) }} </div>
+          <!-- /.box-footer --> 
+          
+          {{ Form::close() }} </div>
+  		</div> 
+      </div>
+     </div>
+    </div>
 <!-- ./wrapper -->
 
 <!-- REQUIRED JS SCRIPTS -->
@@ -336,8 +387,18 @@ desired effect
 @yield('js')
 <!-- AdminLTE App -->
 <script src="{{ asset('js/adminlte.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script> 
 <script src="{{ asset('js/dashboard2.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ asset('js/demo.js') }}"></script>
+<script>
+	$(document).ready(function() {
+		$('#dateofweek').datepicker({
+		   format: 'mm/dd/yyyy',
+           endDate: '+0d',
+		   autoclose: true
+		});
+	});
+</script>
 </body>
 </html>

@@ -20,9 +20,12 @@ class OrganizationController extends Controller {
      */
 
     public function index() {
-		$organizations = Organization::orderby('id', 'desc')->paginate(10); //show only 10 items at a time in descending order
+		//$organizations = Organization::orderby('id', 'desc')->paginate(10); //show only 10 items at a time in descending order
 		//print_R($equipment);
 		//exit;
+		$query = "SELECT * FROM organization
+		ORDER BY name ASC";
+		$organizations = \DB::select($query);
         return view('organization.list', compact('organizations'));
         
     }

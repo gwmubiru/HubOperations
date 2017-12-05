@@ -49,6 +49,24 @@ class ContactController extends Controller {
      */
     public function store(Request $request) { 
 		$contact = new Contact;
+		//depending on whethe the contact is for ip, hub, district, save the relevant table attribute
+		if($request->category == 1){
+			$contact->organizationid = $request->obj;
+			$return_url = 'organization.show';
+			//check that the organization/hub does not have an existing conact of the type in question
+			$existing_contact = Contact::where('type', $request->type)->where('category', $request->category)->where('organizationid',$request->obj)->first();
+		}elseif($request->category == 2){
+			$contact->hubid = $request->obj;
+			$return_url = 'hub.show';
+			//check that the organization/hub does not have an existing conact of the type in question
+			$existing_contact = Contact::where('type', $request->type)->where('category', $request->category)->where('hubid',$request->obj)->first();
+		}else{
+		}
+		//deactivate the existing contact before creating the new one
+		if(!empty($existing_contact)){
+			$existing_contact->isactive = 0;
+			$existing_contact->save();
+		}
 		try {
 			
 			$contact->type = $request->type;
@@ -57,21 +75,16 @@ class ContactController extends Controller {
 			$contact->othernames = $request->othernames;
 			$contact->emailaddress = $request->emailaddress;
 			$contact->telephonenumber = $request->telephonenumber;
+			$contact->phone2 = $request->phone2;
+			$contact->phone3 = $request->phone3;
+			$contact->phone4 = $request->phone4;
 			$contact->category = $request->category;
 			$contact->isactive = 1;
 			$contact->createdby = Auth::getUser()->id;
-			//depending on whethe the contact is for ip, hub, district, save the relevant table attribute
-			if($request->category == 1){
-				$contact->organizationid = $request->obj;
-				$return_url = 'organization.show';
-			}elseif($request->category == 2){
-				$contact->hubid = $request->obj;
-				$return_url = 'hub.show';
-			}else{
-			}
+			
 			$contact->save();
 			//in the return url, use the obj id for which you are saving the contact
-			return redirect()->route($return_url, array('id' => $request->obj));
+			return redirect()->route($return_url, array('id' => $request->obj.'#tab_3'));
 
 		}catch (\Exception $e) {
 			
@@ -114,22 +127,30 @@ class ContactController extends Controller {
      */
     public function update(Request $request, $id) {
 		$contact = Contact::findOrFail($id);
+		//check if there
 		try {
 			$contact->firstname = $request->firstname;
 			$contact->lastname = $request->lastname;
 			$contact->othernames = $request->othernames;
 			$contact->emailaddress = $request->emailaddress;
 			$contact->telephonenumber = $request->telephonenumber;
+			$contact->phone2 = $request->phone2;
+			$contact->phone3 = $request->phone3;
+			$contact->phone4 = $request->phone4;
 			$contact->lastupdatedby = Auth::getUser()->id;
 			//depending on whethe the contact is for ip, hub, district, save the relevant table attribute
 			if($contact->category == 1){
-				$contact->organizationid = $contact->organizationid;
+				$objid = $contact->organizationid;
 				$return_url = 'organization.show';
+			}elseif($contact->category == 2){
+				$return_url = 'hub.show';
+				$objid = $contact->hubid;
 			}else{
+				//do nothing
 			}
 			$contact->save();
 			//in the return url, use the obj id for which you are saving the contact
-			return redirect()->route($return_url, array('id' => $contact->organizationid));
+			return redirect()->route($return_url, array('id' => $objid.'#tab_3'));
 
 		}catch (\Exception $e) {
 			//print_r('faild to save'.$e);

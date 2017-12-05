@@ -6,37 +6,27 @@
 @endif
 
 @section('content')
-
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}">
+@append
+@section('listpagejs')
+<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+    <script>
+		$(document).ready(function() {
+			$('#listtable').DataTable();
+		} );
+	</script>
+@append
 <div class="box box-info">
-  <div class="box-header">
-    <div class="dataTables_length" id="facility_length">
-      <label>Show
-        <select name="facility_length" aria-controls="facility" class="form-control input-sm">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-        entries</label>
-    </div>
-    <div class="box-tools">
-      <div class="input-group input-group-sm" style="width: 150px;">
-        <input name="table_search" class="form-control pull-right" placeholder="Search" type="text">
-        <div class="input-group-btn">
-          <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
+  
   <!-- /.box-header -->
   <div class="box-body table-responsive">
-    <table class="table table-hover">
-      <tbody>
-        <tr>
-          <th>Actions</th>
-          <th>Facility</th>
+    <table id="listtable" class="table table-striped table-bordered">
+    <thead>
+    	<tr>
           <th>First Name</th>
           <th>Last Name</th>
+          <th>Hub</th>
           @if($pagetype == 2)
           <th>Designation</th>
           @endif
@@ -44,15 +34,16 @@
           <th>Driving Permit</th>
           @endif
           <th>National ID</th>
+          <th>Actions</th>
         </tr>
+    </thead>
+      <tbody>
+        
       @foreach ($staff as $st)
       <tr>
-        <td><a href="{{ route('staff.edit', $st->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
-        	<a href="{{ route('staff.destroy', $st->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
-        </td>
-        <td><a href="{{ route('staff.show', $st->id ) }}">{{ $st->facility->name }}</a></td>
-        <td>{{ $st->firstname }}</td>
+        <td><a href="{{ route('staff.show', $st->id ) }}">{{ $st->firstname }}</a></td>
         <td>{{ $st->lastname }}</td>
+        <td>{{ $st->facility }}</td>
         @if($pagetype == 2)
         <td>{{ $st->designation }}</td>
         @endif
@@ -60,22 +51,15 @@
         <td>{{ $st->drivingpermit }}</td>
         @endif
         <td>{{ $st->nationalid }}</td>
+        <td><a href="{{ route('staff.edit', $st->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
+        	<a href="{{ route('staff.destroy', $st->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
+        </td>
       </tr>
       @endforeach
         </tbody>
     </table>
   </div>
   <!-- /.box-body -->
-  <div class="box-footer clearfix">
-    <div class="row">
-      <div class="col-md-5 col-sm-12"> Showing 1 to 1 of 1 entries </div>
-      <div class="col-md-7 col-sm-12">
-        <ul class="pagination pagination-sm no-margin pull-right">
-        {!! $staff->links() !!}
-          
-        </ul>
-      </div>
-    </div>
-  </div>
+  
 </div>
 @endsection

@@ -135,8 +135,8 @@
               </div>
               <!-- /.box-body -->
               <div class="box-footer">
-                <a class="btn btn-default" href="{{ URL::previous() }}">Cancel</a></button>
-                {{ Form::submit('Update', array('class' => 'btn btn-info pull-right')) }}
+                <a class="btn btn-danger btn-sm" href="{{ URL::previous() }}">Cancel</a>
+                {{ Form::submit('Update Sample Transporter', array('class' => 'btn btn-sm btn-warning pull-right')) }}
               </div>
               <!-- /.box-footer -->
             

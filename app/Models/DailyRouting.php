@@ -3,12 +3,12 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class RoutingSchedule extends Model {
+class DailyRouting extends Model {
 	//specify the table to be used to store the equipment
-	protected $table = "routingschedule";
+	protected $table = "dailyrouting";
 	//specify the fields that must be filled
     protected $fillable = [
-        'facilityid', 'dayoftheweek', 'hubid','createdby'
+        'facilityid', 'dayoftheweek', 'hubid','createdby', 'thedate','isactive','status'
     ];
 	
 	public static $rules = [

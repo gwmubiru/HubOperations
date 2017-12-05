@@ -63,6 +63,9 @@
       </tbody>
     </table>
     </div>
+    <div class="box-footer clearfix">  
+                <a href="{{URL::previous()}}" class="btn btn-sm btn-default pull-left">Back</a>
+                <a href="{{route('staff.edit', $staff->id)}}" class="btn btn-sm btn-warning pull-right">Update Sample Transporter</a> </div>
   </div>
 </div>
 @endsection 

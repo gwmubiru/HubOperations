@@ -8,8 +8,8 @@ use App\User;
 use Auth;
 
 //Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Models\Role;
+use App\Models\Permission;
 
 //Enables us to output flash messaging
 use Session;
@@ -17,7 +17,7 @@ use Session;
 class UserController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'isAdmin']); //isAdmin middleware lets only users with a //specific permission permission to access these resources
+        //$this->middleware(['auth', 'isAdmin']); //isAdmin middleware lets only users with a //specific permission permission to access these resources
     }
 
     /**
@@ -37,9 +37,12 @@ class UserController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function create() {
-    //Get all roles and pass it to the view
+    	//Get all roles and pass it to the view
         $roles = Role::get();
-        return view('users.create', ['roles'=>$roles]);
+		//get all hubs
+		$hubs = getAllHubs();
+		$healthregions = getAllHealthRgions();
+        return view('users.create', ['roles'=>$roles, 'hubs'=>$hubs, 'healthregions' => $healthregions]);
     }
 
     /**
@@ -55,23 +58,25 @@ class UserController extends Controller {
             'email'=>'required|email|unique:users',
             'password'=>'required|min:6|confirmed'
         ]);
-
-        $user = User::create($request->only('email', 'name', 'password')); //Retrieving only the email and password data
-
-        $roles = $request['roles']; //Retrieving the roles field
-    //Checking if a role was selected
-        if (isset($roles)) {
-
-            foreach ($roles as $role) {
-            $role_r = Role::where('id', '=', $role)->firstOrFail();            
-            $user->assignRole($role_r); //Assigning role to user
-            }
-        }        
-    //Redirect to the users.index view and display message
-        return redirect()->route('users.index')
-            ->with('flash_message',
-             'User successfully added.');
+		try {
+				$user = new User;
+				$user->email = $request->email;
+				$user->name = $request->name;
+				$user->password = bcrypt($request->password);
+				$user->hubid = $request->hubid;
+				$user->healthregionid = $request->healthregionid;
+				$user->username = $request->username;
+				$user->save();
+				//$user = User::create($request->only('email', 'name', 'password','hubid','healthregionid','username')); 
+				$user->roles()->attach($request['roles']);
+				 return redirect()->route('users.show', array('id' => $user->id))->with('flash_message',
+				 'User successfully added.');
+			}catch (\Exception $e) {
+				print_r($e);
+				exit;
+			}
     }
+
 
     /**
     * Display the specified resource.
@@ -80,7 +85,8 @@ class UserController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function show($id) {
-        return redirect('users'); 
+        $user = User::findOrFail($id); //Find post of id = $id
+        return view ('users.show', compact('user')); 
     }
 
     /**
@@ -92,8 +98,9 @@ class UserController extends Controller {
     public function edit($id) {
         $user = User::findOrFail($id); //Get user with specified id
         $roles = Role::get(); //Get all roles
-
-        return view('users.edit', compact('user', 'roles')); //pass user and roles data to view
+		$hubs = getAllHubs();
+		$healthregions = getAllHealthRgions();
+        return view('users.edit', compact('user', 'roles','hubs','healthregions')); //pass user and roles data to view
 
     }
 
@@ -113,9 +120,23 @@ class UserController extends Controller {
             'email'=>'required|email|unique:users,email,'.$id,
             'password'=>'required|min:6|confirmed'
         ]);
-        $input = $request->only(['name', 'email', 'password']); //Retreive the name, email and password fields
+       // $input = $request->only(['name', 'email', 'password']); 
         $roles = $request['roles']; //Retreive all roles
-        $user->fill($input)->save();
+		$user->email = $request->email;
+		$user->name = $request->name;
+		if(!empty($request->password)){
+			$user->password = bcrypt($request->password);
+		}
+		if(!empty($request->hubid)){
+			$user->hubid = $request->hubid;
+		}
+		if(!empty($request->healthregionid)){
+			$user->healthregionid = $request->healthregionid;
+		}
+		if(!empty($request->username)){
+			$user->username = $request->username;
+		}
+		$user->save();
 
         if (isset($roles)) {        
             $user->roles()->sync($roles);  //If one or more role is selected associate user to roles          
@@ -123,8 +144,8 @@ class UserController extends Controller {
         else {
             $user->roles()->detach(); //If no role is selected remove exisiting role associated to a user
         }
-        return redirect()->route('users.index')
-            ->with('flash_message',
+            
+		return redirect()->route('users.show', array('id' => $user->id))->with('flash_message',
              'User successfully edited.');
     }
 

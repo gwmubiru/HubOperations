@@ -24,4 +24,10 @@ class Contact extends Model {
 	{
 		return $this->belongsTo('App\Models\Organization', 'organizationid', 'id');
 	}
+	/**
+	* Get full name
+	**/
+	function getFullName(){
+		return $this->firstname.' '.$this->lastname.' '.$this->othernames;
+	}
 }

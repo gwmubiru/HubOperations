@@ -67,8 +67,8 @@
   </div>
   <!-- /.box-body -->
   <div class="box-footer">
-    <a class="btn btn-danger" href="{{ URL::previous() }}">Cancel</a></button>
-    {{ Form::submit('Update IP', array('class' => 'btn btn-warning pull-right')) }} </div>
+    <a class="btn btn-sm btn-danger" href="{{ URL::previous() }}">Cancel</a></button>
+    {{ Form::submit('Update IP', array('class' => 'btn btn-sm btn-warning pull-right')) }} </div>
   <!-- /.box-footer --> 
   
   {{ Form::close() }} </div>

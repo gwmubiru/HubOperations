@@ -2,12 +2,28 @@
 @if ($pagetype == 1)
 	@section('title', 'Add New Sample Transporter')
 @else
-	@section('title', 'Add New Staff Member')
+	@section('title', 'Add New Sample Transporter')
 @endif
 @section('js')
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
  <script>
 	$(document).ready(function() {
+		
+	$("select[name='facilityid']").change(function(){
+      var id = $(this).val();
+      var token = $("input[name='_token']").val();
+      $.ajax({
+          url: "<?php echo url('staff/bikewithoutrider'); ?>",
+          method: 'POST',
+          data: {hubid:id, _token:token},
+          success: function(data) {
+			  	$("#motorbikeid").html("").prepend("<option value=''>Select One</option>"); 
+			    $("select[name='motorbikeid'").html('');
+				$("select[name='motorbikeid'").html(data.options);
+			  }
+		  });
+	  	});
+		
 		$('#staffform').bootstrapValidator({
        
         fields: {
@@ -24,6 +40,27 @@
                         notEmpty: {
                             message: 'Please enter the first name'
                         }
+                    }
+                },
+				drivingpermit: {
+                    validators: {
+                        integer: {
+                            message: 'Please enter a number'
+                        },
+						stringLength: {
+							  min: 8,
+							  max: 8,
+							  message: 'Permit number should be 8 digits long'
+						}
+                    }
+                },
+				nationalid: {
+                    validators: {
+						stringLength: {
+							  min: 14,
+							  max: 14,
+							  message: 'The NIN should be 14 characters long'
+						}
                     }
                 },
 				lastname: {
@@ -55,6 +92,15 @@
 @append
 @section('content')
 	<div class="box box-info">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+         @endif
             
             <!-- /.box-header -->
             <!-- form start -->
@@ -67,7 +113,7 @@
                   <label for="facility" class="col-sm-2 control-label">{{ Form::label('facility', 'Hub') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('facilityid', $hubsdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('facilityid', $hubsdropdown, null, ['class' => 'form-control', 'id' => 'facilityid']) }}
                      
                   </div>
                 </div>             
@@ -127,15 +173,20 @@
                 </div>
                 @if ($pagetype == 1)
                     <div class="form-group">
-                      <label for="drivingpermitnumber" class="col-sm-2 control-label">{{ Form::label('drivingpermitnumber', 'Driving Permit') }}</label>
+                      <label for="drivingpermit" class="col-sm-2 control-label">{{ Form::label('drivingpermit', 'Driving Permit No.') }}</label>
     
                       <div class="col-sm-10">
-                        {{ Form::text('drivingpermitnumber', null, array('class' => 'form-control', 'id' => 'drivingpermitnumber')) }}
+                        {{ Form::text('drivingpermit', null, array('class' => 'form-control', 'id' => 'drivingpermit')) }}
+                        @if ($errors->has('drivingpermit'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('drivingpermit') }}</strong>
+                            </span>
+                        @endif
                       </div>
                     </div>
                  @endif
                 <div class="form-group">
-                  <label for="nationalid" class="col-sm-2 control-label">{{ Form::label('nationalid', 'National ID') }}</label>
+                  <label for="nationalid" class="col-sm-2 control-label">{{ Form::label('nationalid', 'National ID (NIN)') }}</label>
 
                   <div class="col-sm-10">
                   	{{ Form::hidden('type', $pagetype) }}
@@ -145,8 +196,8 @@
               </div>
               <!-- /.box-body -->
               <div class="box-footer">
-                <a class="btn btn-danger" href="{{ URL::previous() }}">Cancel</a></button>
-                {{ Form::submit('Create Staff', array('class' => 'btn btn-info pull-right')) }}
+                <a class="btn btn-sm btn-danger" href="{{ URL::previous() }}">Cancel</a>
+                {{ Form::submit('Create Sample Transporter', array('class' => 'btn btn-sm btn-info pull-right')) }}
               </div>
               <!-- /.box-footer -->
             

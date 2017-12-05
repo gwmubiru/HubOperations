@@ -23,9 +23,11 @@ class HubController extends Controller {
      */
 
     public function index() {
-        $hubs = Facility::where('hubname', '!=', NULL)->orderby('name', 'asc')->paginate(10); //show only 10 items at a time in descending order
-		//print_R($equipment);
-		//exit;
+		$query = "SELECT f.id, f.name, f.hubname, f.address, hr.name as healthregion FROM facility f
+	INNER JOIN healthregion hr ON(f.healthregionid = hr.id AND ISNULL(f.parentid))
+		WHERE f.id != ''
+		ORDER BY f.name ASC";
+		$hubs = \DB::select($query);
         return view('hub.list', compact('hubs'));
     }
 
@@ -125,7 +127,6 @@ class HubController extends Controller {
     public function update(Request $request, $id) {
          $this->validate($request, [
             'name'=>'required|max:100',
-            'email'=>'required',
         ]);
 
         $hub = Facility::findOrFail($id);

@@ -1,16 +1,22 @@
 {{-- \resources\views\users\index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', '| Users')
-
+@section('title', 'Users')
+@section('css')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+@append
+@section('listpagejs')
+<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+    <script>
+		$(document).ready(function() {
+			$('#users-table').DataTable();
+		} );
+	</script>
+@append
 @section('content')
-
-<div class="col-lg-10 col-lg-offset-1">
-    <h1><i class="fa fa-users"></i> User Administration <a href="{{ route('roles.index') }}" class="btn btn-default pull-right">Roles</a>
-    <a href="{{ route('permissions.index') }}" class="btn btn-default pull-right">Permissions</a></h1>
-    <hr>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+<div class="box box-info">
+    <div class="box-body table-responsive">
+        <table id="users-table" class="table table-bordered table-striped">
 
             <thead>
                 <tr>
@@ -18,7 +24,7 @@
                     <th>Email</th>
                     <th>Date/Time Added</th>
                     <th>User Roles</th>
-                    <th>Operations</th>
+                    <th>Action</th>
                 </tr>
             </thead>
 
@@ -26,15 +32,14 @@
                 @foreach ($users as $user)
                 <tr>
 
-                    <td>{{ $user->name }}</td>
+                    <td><a href="{{ route('users.show', $user->id ) }}">{{ $user->name }}</a></td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at->format('F d, Y h:ia') }}</td>
-                    <td>{{  $user->roles()->pluck('name')->implode(' ') }}</td>{{-- Retrieve array of roles associated to a user and convert to string --}}
+                    <td>{{ $user->created_at->format('F d, Y') }}</td>
+                    <td>{{  $user->roles()->pluck('display_name')->implode(', ') }}</td>{{-- Retrieve array of roles associated to a user and convert to string --}}
                     <td>
-                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-info pull-left" style="margin-right: 3px;">Edit</a>
-
+                    <a href="{{ route('users.edit', $user->id) }}"> <i class="fa fa-fw fa-edit"></i>Edit</a>
+					<a href="{{ route('users.destroy', $user->id) }}"> <i class="fa fa-fw fa-trash-o"></i>Delete</a>
                     {!! Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id] ]) !!}
-                    {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
                     {!! Form::close() !!}
 
                     </td>
@@ -44,9 +49,6 @@
 
         </table>
     </div>
-
-    <a href="{{ route('users.create') }}" class="btn btn-success">Add User</a>
-
 </div>
 
 @endsection

@@ -8,7 +8,7 @@ use Auth;
 use Session;
 
 use \App\Models\LookupType as LookupType;
-use \App\Models\RoutingSchedule as RoutingSchedule;
+use \App\Models\DailyRouting as DailyRouting;
 use \App\Models\Facility as Facility;
 
 class DailyRoutingController extends Controller {
@@ -16,6 +16,29 @@ class DailyRoutingController extends Controller {
     public function __construct() {
         //$this->middleware(['auth', 'clearance'])->except('index', 'show');
     }
+	public function setweekendingdates(Request $request){
+		$hubid = Auth::getUser()->hubid; 
+		$facilitydropdown = getFacilitiesforHub($hubid);
+		$week_period = getPeriodStartingDateTimestamp($request->dateofweek);
+		//save the weekly daily rout
+		try {
+			$dailyrouting = new DailyRouting;
+			$dailyrouting->startdate = $week_period[0];
+			$dailyrouting->enddate = $week_period[1];
+			$dailyrouting->weekendingdate = $week_period[1];
+			$dailyrouting->createdby = $hubid;
+			$dailyrouting->save();
+			//print_r($week_period);
+			return view('dailyrouting.form', compact('week_period','facilitydropdown'));
+		}catch (\Exception $e) {
+			print_r('faild to save'.$e);
+			exit;
+		}
+		
+		//if the daily routing for the week is not created already, create it.
+		
+		exit;
+	}
 
     /**
      * Display a listing of the resource.
@@ -199,8 +222,6 @@ class DailyRoutingController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-		
-		
 		try {
 		   \DB::transaction(function() use($request, $id){
 			  //delete the previously existing data

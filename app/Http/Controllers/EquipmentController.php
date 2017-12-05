@@ -1,6 +1,4 @@
 <?php
-// app/Http/Controllers/PostController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -9,6 +7,9 @@ use Auth;
 use Session;
 use \App\Models\LookupType as LookupType;
 use \App\Models\Equipment as Equipment;
+use \App\Models\EquipmentBreakDown as EquipmentBreakDown;
+use \App\Models\EquipmentBreakDownAction as EquipmentBreakDownAction;
+use \App\Models\EquipmentBreakDownReason as EquipmentBreakDownReason;
 class EquipmentController extends Controller {
 
     public function __construct() {
@@ -20,19 +21,46 @@ class EquipmentController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-
+	
     public function index() {
+		$where_condition = '';
 		if(Auth::user()->hasRole('In_charge')){
-			$equipment = Equipment::where('hubid',Auth::user()->hubid)->orderby('id', 'desc')->paginate(10);
-		}else{
-			$equipment = Equipment::orderby('id', 'desc')->paginate(10); 
+			$where_condition = " AND hubid ='".Auth::user()->hubid."'";
 		}
+		$query = "SELECT * FROM equipment
+		WHERE id != '' ".$where_condition."
+		ORDER BY numberplate ASC";
+		//echo $query;
+		//exit;
+		$equipment = \DB::select($query);
 		//print_R($equipment);
 		//exit;
         return view('equipment.list', compact('equipment'));
         
     }
-
+	public function elist($status){
+		$status_query = '';
+		
+		if(Auth::user()->hasRole('In_charge')){
+			$equipment = Equipment::where('hubid',Auth::user()->hubid)->where('status',$status)->orderby('id', 'desc')->paginate(10);
+		}else{
+			$equipment = Equipment::orderby('id', 'desc')->where('status',$status)->paginate(10); 
+		}
+		//print_R($equipment);
+		//exit;
+        return view('equipment.elist', compact('equipment'));
+		
+	}
+	public function servicecont($service){
+		if(Auth::user()->hasRole('In_charge')){
+			$equipment = Equipment::where('hubid',Auth::user()->hubid)->where('hasservicecontract',$service)->orderby('id', 'desc')->paginate(10);
+		}else{
+			$equipment = Equipment::orderby('id', 'desc')->where('hasservicecontract',$service)->paginate(10); 
+		}
+		//print_R($equipment);
+		//exit;
+        return view('equipment.elist', compact('equipment'));		
+	}
     /**
      * Show the form for creating a new resource.
      *
@@ -61,14 +89,17 @@ class EquipmentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) { 
-		
+		$this->validate($request, [
+			'numberplate' => 'unique:equipment',
+			'enginenumber' => 'nullable|unique:equipment'
+		]);
 		//Validate all fields
          $equipment = new \App\Models\Equipment;
 		try {
 			$equipment->facilityid = $request->facilityid;
 			$equipment->hubid = $request->facilityid;
 			$equipment->type = 1;
-			$equipment->createdby = 1;
+			$equipment->createdby = \Auth()->user()->id;
 			$equipment->enginenumber = $request->enginenumber;
 			$equipment->chasisnumber = $request->chasisnumber;
 			$equipment->modelnumber = $request->modelnumber;
@@ -108,9 +139,14 @@ class EquipmentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-		$equipment = Equipment::findOrFail($id); //Find post of id = $id
-		//$servd =  LookupType::getLookupValueDescription("YES_NO", $equipment->hasservicecontract);
-        return view ('equipment.show', compact('equipment'));
+		$equipment = Equipment::findOrFail($id); 
+		$breakdown_action_taken = 0;
+		$reasons_for_breakdown = 0;
+		if($equipment->breakdownid){
+			$breakdown_action_taken = getActionTakenOnBike($equipment->breakdownid);
+			$reasons_for_breakdown = getBikeBreakDownReason($equipment->breakdownid);
+		}
+        return view ('equipment.show', compact('equipment','reasons_for_breakdown','breakdown_action_taken'));
        
     }
 
@@ -151,7 +187,6 @@ class EquipmentController extends Controller {
 			$equipment->facilityid = $request->facilityid;
 			$equipment->hubid = $request->facilityid;
 			$equipment->type = 1;
-			$equipment->createdby = 1;
 			$equipment->enginenumber = $request->enginenumber;
 			$equipment->chasisnumber = $request->chasisnumber;
 			$equipment->modelnumber = $request->modelnumber;
@@ -191,10 +226,103 @@ class EquipmentController extends Controller {
      */
     public function destroy($id) {
        $equipment = Equipment::findOrFail($id);
-        $equipment->delete();
+       $equipment->delete();
 
         return redirect()->route('equipment.list')
             ->with('flash_message',
              'Equipment successfully deleted');
     }
+	
+	public function breakdownform($hubid, $id = NULL){
+		$equipment = new Equipment;
+		$mechanics = array_merge_maintain_keys(array('' => 'Select One'),getMechanicforHub($hubid));
+		if($id){
+			$equipment = Equipment::findOrFail($id);
+			
+		}
+		$lt = new LookupType();
+		$lt->name = 'BIKE_DOWN_REASONS';
+		$reasons_for_breakdown = $lt->getOptionValuesAndDescription();
+		//actions taken
+		$lt->name = 'BIKE_BREAK_DOWN_ACTIONS';
+		$actions_taken_for_breakdown = $lt->getOptionValuesAndDescription();
+		
+		//print_r($reasons_for_breakdown);
+		//exit;
+		return view('equipment.maintenance.breakdownform', compact('reasons_for_breakdown','actions_taken_for_breakdown','mechanics','hubid','id'));
+	}
+	
+	public function savebreakdown(Request $request){		
+		try {
+			
+		   \DB::transaction(function() use($request){
+			   $userid = \Auth()->user()->id;
+			   $equipment_breakdown = new EquipmentBreakDown;
+			   $equipment_breakdown->hubid = $request->hubid;
+			   $equipment_breakdown->bikeid = $request->id;
+			   $equipment_breakdown->mechanicid = $request->mechanicid;
+			   $equipment_breakdown->status = 1;
+			   $equipment_breakdown->reportedby = $userid;
+			   $equipment_breakdown->createdby = $userid;
+			   $equipment_breakdown->reportingdate = date('Y-m-d');
+			   $equipment_breakdown->datebrokendown = date('Y-m-d', strtotime($request->reportingdate));
+			   $equipment_breakdown->save();
+			   	//update the bike status to 'broken down' and set the matching breakage id
+				$equipment = Equipment::findOrFail($request->id);	
+				$equipment->breakdownid = $equipment_breakdown->id;	
+				$equipment->status = 2;	 
+				$equipment->save();  
+			   //now save the details of the break down
+			  foreach($request->actionstaken as $action){
+				   	$equipment_breakdown_action = new EquipmentBreakDownAction;
+			   		$equipment_breakdown_action->action = $action;
+			  		$equipment_breakdown_action->equipmentbreakdownid = $equipment_breakdown->id;
+					$equipment_breakdown_action->createdby = $userid;
+					$equipment_breakdown_action->save();
+				}
+			   
+			   // now save reasons for breakdwon
+			   foreach($request->reasonforbreakdown as $reason){
+				   	$equipment_breakdown_reason = new EquipmentBreakDownReason;
+			   		$equipment_breakdown_reason->reason = $reason;
+			  		$equipment_breakdown_reason->equipmentbreakdownid = $equipment_breakdown->id;
+					$equipment_breakdown_reason->createdby = $userid;
+					$equipment_breakdown_reason->save();
+				}
+			  
+		   });
+		   return redirect()->route('equipment.show', array('id' => $request->id));
+		}catch (\Exception $e) {
+			return redirect()->url('equipment/down/hubid/'.$request->hubid.'/id/'.$request->id)
+            ->with('flash_message', 'failed');
+		}
+	}
+	
+	public function updatebreakdownstatus(Request $request){
+		
+		try {
+			\DB::transaction(function() use($request){
+				$equipment = Equipment::findOrFail($request->equipmentid);
+				$equipment_breakdown = EquipmentBreakDown::findOrFail($request->breakdownid);
+				$userid = \Auth()->user()->id;
+				//update the breakdown status
+				$equipment_breakdown->closingnotes = $request->closingnotes;
+				$equipment_breakdown->status = 2;
+				$equipment_breakdown->closedby = $userid;
+				$equipment_breakdown->brokendownenddate = date('Y-m-d H:s:i');
+				$equipment_breakdown->save();
+				//update the equipment/bike status to 1, also remove the breakdownid
+				$equipment->status = 1;
+				$equipment->breakdownid = NULL;
+				$equipment->save();
+			});
+			//exit;
+		 	return redirect()->route('equipment.show', array('id' => $request->equipmentid));
+		 }catch (\Exception $e) {
+			// print_r($e);
+			 //exit;
+			return redirect()->url('equipment/down/hubid/'.$request->hubid.'/id/'.$request->id)
+            ->with('flash_message', 'failed');
+		}
+	}	 
 }

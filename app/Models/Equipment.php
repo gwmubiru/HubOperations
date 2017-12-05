@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +21,17 @@ class Equipment extends Model {
 	*/
 	public function hub()
 	{
-		return $this->belongsTo('App\Models\Hub', 'hubid','id');
+		return $this->belongsTo('App\Models\Facility', 'hubid','id');
+	}
+	public function breakdown()
+	{
+		return $this->hasOne('App\Models\EquipmentBreakDown', 'bikeid','id');
+	}
+	/**
+	* Relationship with bike
+	*/
+	public function bikerider()
+	{
+		return $this->belongsTo('App\Models\Staff', 'id', 'motorbikeid');
 	}
 }

@@ -39,7 +39,7 @@
   <!-- /.box-header --> 
   <!-- form start --> 
   {{-- Using the Laravel HTML Form Collective to create our form --}}
-  {{ Form::open(array('route' => 'routingschedule.store', 'class' => 'form-horizontal', 'id' => 'routingscheduleform')) }}
+  {{ Form::open(array('route' => 'dailyrouting.store', 'class' => 'form-horizontal', 'id' => 'routingscheduleform')) }}
   {{ csrf_field() }}
   <div class="box-body">
     <div class="form-group">

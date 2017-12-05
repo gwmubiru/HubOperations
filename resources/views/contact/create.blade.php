@@ -16,13 +16,6 @@
                         }
                     }
                 },
-				lastname: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter the last name'
-                        }
-                    }
-                },
 				telephonenumber: {
                     validators: {
                         notEmpty: {
@@ -87,6 +80,27 @@
 
                   <div class="col-sm-10">
                     {{ Form::text('telephonenumber', null, array('class' => 'form-control', 'id' => 'telephonenumber')) }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="telephonenumber2" class="col-sm-2 control-label">{{ Form::label('telephonenumber2', 'Telephone Number2') }}</label>
+
+                  <div class="col-sm-10">
+                    {{ Form::text('phone2', null, array('class' => 'form-control', 'id' => 'phone2')) }}
+                  </div>
+                </div> 
+                <div class="form-group">
+                  <label for="telephonenumber3" class="col-sm-2 control-label">{{ Form::label('telephonenumbe3', 'Telephone Number3') }}</label>
+
+                  <div class="col-sm-10">
+                    {{ Form::text('phone3', null, array('class' => 'form-control', 'id' => 'phone3')) }}
+                  </div>
+                </div>  
+                <div class="form-group">
+                  <label for="telephonenumber4" class="col-sm-2 control-label">{{ Form::label('telephonenumbe4', 'Telephone Number4') }}</label>
+
+                  <div class="col-sm-10">
+                    {{ Form::text('phone4', null, array('class' => 'form-control', 'id' => 'phone4')) }}
                   </div>
                 </div>                
               </div>

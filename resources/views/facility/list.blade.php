@@ -2,13 +2,46 @@
 
 @section('title', 'All Facilities')
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" />
 @append
 @section('listpagejs')
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('js/jszip.min.js') }}"></script>
+<script src="{{ asset('js/pdfmake.min.js') }}"></script>
+<script src="{{ asset('js/vfs_fonts.js') }}"></script>
+<script src="{{ asset('js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('js/buttons.colVis.min.js') }}"></script>
     <script>
 		$(document).ready(function() {
-			$('#facilitylist').DataTable();
+			//$('#facilitylist').DataTable();
+			/*$('#facilitylist').DataTable( {
+				dom: 'Bfrtip',
+				buttons: [
+					'excelHtml5',
+					'pdfHtml5'
+				]
+			} );*/
+			 $('#facilitylist').DataTable( {
+				dom: 'Bfrtip',
+				buttons: [
+					
+					{
+						extend: 'excelHtml5',
+						exportOptions: {
+							columns: ':visible'
+						}
+					},
+					{
+						extend: 'pdfHtml5',
+						exportOptions: {
+							columns: ':visible'
+						}
+					},
+					'colvis'
+				]
+			} );
 		} );
 	</script>
 @append
@@ -19,15 +52,13 @@
   
   <!-- /.box-header -->
   <div class="box-body table-responsive">
-    <table id="facilitylist" class="table table-striped table-bordered">
+    <table id="facilitylist" class="table table-striped table-bordered display">
       <thead>
         <tr>
           <th>Name</th>
           <th>Hub</th>
           <th>District</th>
           <th>Level</th>
-          <th>Contact Person</th>
-          <th>Phone Number</th>
            <th>Actions</th>
 
         </tr></thead>
@@ -38,8 +69,6 @@
         <td>{{ $facility->hub }}</td>
         <td>{{ $facility->district }}</td>
         <td>{{ $facility->facilitylevel }}</td>
-        <td>{{ $facility->contactperson }}</td>
-        <td>{{ $facility->phonenumber }}</td>
         <td><a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
        	<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
         </td>

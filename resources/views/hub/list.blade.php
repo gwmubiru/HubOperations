@@ -2,63 +2,68 @@
 @section('title', 'View All Hubs')
 @section('content')
 
-<div class="box box-info">
-  <div class="box-header">
-    <div class="dataTables_length" id="facility_length">
-      <label>Show
-        <select name="facility_length" aria-controls="facility" class="form-control input-sm">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-        entries</label>
-    </div>
-    <div class="box-tools">
-      <div class="input-group input-group-sm" style="width: 150px;">
-        <input name="table_search" class="form-control pull-right" placeholder="Search" type="text">
-        <div class="input-group-btn">
-          <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
+@section('css')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" />
+@append
+@section('listpagejs')
+<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('js/jszip.min.js') }}"></script>
+<script src="{{ asset('js/pdfmake.min.js') }}"></script>
+<script src="{{ asset('js/vfs_fonts.js') }}"></script>
+<script src="{{ asset('js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('js/buttons.colVis.min.js') }}"></script>
+<script>
+		$(document).ready(function() {
+			//$('#listtable').DataTable();
+			$('#listtable').DataTable( {
+				dom: 'Bfrtip',
+				buttons: [
+					
+					{
+						extend: 'excelHtml5',
+						exportOptions: {
+							columns: ':visible'
+						}
+					},
+					{
+						extend: 'pdfHtml5',
+						exportOptions: {
+							columns: ':visible'
+						}
+					},
+					'colvis'
+				]
+			} );
+		} );
+	</script> 
+@append
+<div class="box box-info"> 
   <!-- /.box-header -->
   <div class="box-body table-responsive">
-    <table class="table table-hover">
-      <tbody>
+    <table id="listtable" class="table table-striped table-bordered">
+      <thead>
         <tr>
-          <th>Actions</th>
           <th>Name</th>
           <th>Health Region</th>
-          <th>Address</th>
-         
+          <th>Actions</th>
         </tr>
+      </thead>
+      <tbody>
+      
       @foreach ($hubs as $hub)
       <tr>
-        <td><a href="{{ route('hub.edit', $hub->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
-        	<a href="{{ route('hub.destroy', $hub->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
-        </td>
         <td><a href="{{ route('hub.show', $hub->id ) }}">{{ $hub->hubname }}</a></td>
-        <td>@if($hub->healthregionid){{ $hub->healthregion->name }}@endif</td>
-        <td>{{ $hub->address }}</td>
-        
+        <td>{{ $hub->healthregion }}</td>
+        <td><a href="{{ route('hub.edit', $hub->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp; <a href="{{ route('hub.destroy', $hub->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a></td>
       </tr>
       @endforeach
         </tbody>
+      
     </table>
   </div>
-  <!-- /.box-body -->
-  <div class="box-footer clearfix">
-    <div class="row">
-      <div class="col-md-5 col-sm-12"> Showing 1 to 1 of 1 entries </div>
-      <div class="col-md-7 col-sm-12">
-        <ul class="pagination pagination-sm no-margin pull-right">
-        {!! $hubs->links() !!}
-          
-        </ul>
-      </div>
-    </div>
-  </div>
+  <!-- /.box-body --> 
+  
 </div>
 @endsection
