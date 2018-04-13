@@ -28,7 +28,10 @@
       @foreach ($organizations as $organization)
       <tr>
         <td><a href="{{ route('organization.show', $organization->id ) }}">{{ $organization->name }}</a></td>
-        <td><a href="{{ route('organization.edit', $organization->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp; <a href="{{ route('organization.destroy', $organization->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a></td>
+        <td><a href="{{ route('organization.edit', $organization->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;  @if(Entrust::can('Delete-IP'))
+        <a href="{{ route('organization.destroy', $organization->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
+        @endif
+        </td>
       </tr>
       @endforeach
         </tbody>

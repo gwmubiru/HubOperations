@@ -46,8 +46,13 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>IP(s)</th>
           <th>Health Region</th>
+          <th>Resident District</th>
+          <th>No.Facilities Served</th>
+         @if($can_update_facility || $can_delete_facility)
           <th>Actions</th>
+          @endif 
         </tr>
       </thead>
       <tbody>
@@ -55,8 +60,17 @@
       @foreach ($hubs as $hub)
       <tr>
         <td><a href="{{ route('hub.show', $hub->id ) }}">{{ $hub->hubname }}</a></td>
+        <td>{{getIpsForFacility($hub->id)}}</td>
         <td>{{ $hub->healthregion }}</td>
-        <td><a href="{{ route('hub.edit', $hub->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp; <a href="{{ route('hub.destroy', $hub->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a></td>
+        <td>{{ $hub->district }}</td>
+        <td>{{ count(getFacilitiesforHub($hub->id)) }}</td>
+        @if($can_update_facility || $can_delete_facility)
+        <td>
+        @if($can_update_facility)<a href="{{ route('hub.edit', $hub->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp; @endif
+        @if($can_delete_facility)
+        <a href="{{ route('hub.destroy', $hub->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
+        @endif</td>
+        @endif
       </tr>
       @endforeach
         </tbody>

@@ -162,6 +162,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+		Maatwebsite\Excel\ExcelServiceProvider::class,
+		Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -178,6 +180,8 @@ return [
         App\Providers\RouteServiceProvider::class,
 		Zizaco\Entrust\EntrustServiceProvider::class,
 		Collective\Html\HtmlServiceProvider::class,
+         //views composer - service to make data accessible accross multiple views
+         App\Providers\ViewComposerServiceProvider::class,
     ],
 
     /*
@@ -229,6 +233,8 @@ return [
 		'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
 		'Form' => Collective\Html\FormFacade::class,
      	'Html' => Collective\Html\HtmlFacade::class,
+		'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+		'Lava' => Khill\Lavacharts\Laravel\LavachartsFacade::class
     ],
 
 ];

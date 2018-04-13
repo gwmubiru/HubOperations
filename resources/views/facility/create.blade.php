@@ -72,14 +72,14 @@
                   <label for="name" class="col-sm-2 control-label">{{ Form::label('name', 'Name') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::text('name', null, array('class' => 'form-control', 'id' => 'name')) }}
+                    {{ Form::text('facility', null, array('class' => 'form-control', 'id' => 'name')) }}
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="healthregionid" class="col-sm-2 control-label">{{ Form::label('hubid', 'Hub') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('hubid', $hubsdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('hubID', $hubsdropdown, null, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -87,7 +87,7 @@
                   <label for="facilitylevelid" class="col-sm-2 control-label">{{ Form::label('facilitylevelid', 'Level') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('facilitylevelid', $facilityleveldropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('facilityLevelID', $facilityleveldropdown, null, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -95,7 +95,7 @@
                   <label for="districtid" class="col-sm-2 control-label">{{ Form::label('districtid', 'District') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('districtid', $districtdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('districtID', $districtdropdown, null, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -109,28 +109,28 @@
                     </div>
                 </div>
                 <div class="form-group">
-                  <label for="contactperson" class="col-sm-2 control-label">{{ Form::label('contactperson', 'Contact Person') }}</label>
+                  <label for="incharge" class="col-sm-2 control-label">{{ Form::label('incharge', 'Incharge') }}</label>
 
-                  <div class="col-sm-10">
-                    {{ Form::text('contactperson', null, array('class' => 'form-control', 'id' => 'contactperson')) }}
+                  <div class="col-sm-5">
+                    {{ Form::text('incharge', null, array('class' => 'form-control', 'id' => 'incharge', 'placeholder' => 'Name')) }}
+                  </div>
+                  <div class="col-sm-5">
+                    {{ Form::text('inchargephonenumber', null, array('class' => 'form-control', 'id' => 'inchargephonenumber','placeholder'=>'Phone number')) }}
                   </div>
                 </div>
-                 <div class="form-group">
-                  <label for="email" class="col-sm-2 control-label">{{ Form::label('email', 'Email Address') }}</label>
-
-                  <div class="col-sm-10">
-                    {{ Form::text('email', null, array('class' => 'form-control', 'id' => 'email')) }}
-                  </div>
-                </div>
+              
                 <div class="form-group">
-                  <label for="phonenumber" class="col-sm-2 control-label">{{ Form::label('phonenumber', 'Phone Number') }}</label>
+                  <label for="labmanager" class="col-sm-2 control-label">{{ Form::label('labmanager', 'Lab Manager') }}</label>
 
-                  <div class="col-sm-10">
-                    {{ Form::text('phonenumber', null, array('class' => 'form-control', 'id' => 'phonenumber')) }}
+                  <div class="col-sm-5">
+                    {{ Form::text('labmanager', null, array('class' => 'form-control', 'id' => 'labmanager', 'placeholder' => 'Name')) }}
+                  </div>
+                  <div class="col-sm-5">
+                    {{ Form::text('labmanagerphonenumber', null, array('class' => 'form-control', 'id' => 'labmanagerphonenumber', 'placeholder' => 'Phone Number')) }}
                   </div>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group hidden">
                   <label for="address" class="col-sm-2 control-label">{{ Form::label('address', 'Physical Address') }}</label>
 
                   <div class="col-sm-10">

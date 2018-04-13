@@ -8,7 +8,7 @@ class DailyRouting extends Model {
 	protected $table = "dailyrouting";
 	//specify the fields that must be filled
     protected $fillable = [
-        'facilityid', 'dayoftheweek', 'hubid','createdby', 'thedate','isactive','status'
+        'facilityid', 'dayoftheweek', 'hubid', 'transporterid','createdby', 'thedate','isactive','status'
     ];
 	
 	public static $rules = [

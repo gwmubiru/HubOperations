@@ -62,7 +62,7 @@ class UserController extends Controller {
 				$user = new User;
 				$user->email = $request->email;
 				$user->name = $request->name;
-				$user->password = bcrypt($request->password);
+				$user->setPasswordAttribute($request->password);
 				$user->hubid = $request->hubid;
 				$user->healthregionid = $request->healthregionid;
 				$user->username = $request->username;
@@ -125,7 +125,7 @@ class UserController extends Controller {
 		$user->email = $request->email;
 		$user->name = $request->name;
 		if(!empty($request->password)){
-			$user->password = bcrypt($request->password);
+			$user->setPasswordAttribute($request->password);
 		}
 		if(!empty($request->hubid)){
 			$user->hubid = $request->hubid;

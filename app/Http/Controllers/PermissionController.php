@@ -35,7 +35,7 @@ class PermissionController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function create() {
-        $roles = Role::get(); //Get all roles
+		$roles = Role::get(); //Get all roles
 
         return view('permissions.create')->with('roles', $roles);
     }
@@ -54,13 +54,12 @@ class PermissionController extends Controller {
 		   \DB::transaction(function() use($request){
 				$name = $request['name'];
 				$permission = new Permission();
-				$permission->display_name = generateSlug($name);
-				$permission->name = $name;
+				$permission->display_name = $name;
+				$permission->name = generateSlug($name);
+				$permission->save();
 				$roles = $request['roles'];
 		
-				$permission->save();
-		
-				if (!empty($request['roles'])) { //If one or more role is selected
+				if (!empty($roles)) { //If one or more role is selected
 					foreach ($roles as $role) {
 						$r = Role::where('id', '=', $role)->firstOrFail(); //Match input role to db record
 						$r->perms()->sync($permission->id);
@@ -69,9 +68,11 @@ class PermissionController extends Controller {
 							
 		   });
 		   return redirect()->route('permissions.index')->with('flash_message',
-					 'Permission'. $permission->display_name.' added!');
+					 'Permission added!');
 		 }catch (\Exception $e) {
-			print_r($e);
+			 
+			print_r($e->toArray());
+			exit;
 		}
     }
 
@@ -126,6 +127,7 @@ class PermissionController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function destroy($id) {
+		exit;
         $permission = Permission::findOrFail($id);
 
     //Make it impossible to delete this specific permission 

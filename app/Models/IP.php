@@ -30,7 +30,7 @@ class IP extends Model {
     }
 
     public function hubs(){
-        return $this->hasMany('App\Models\\Hub','ipID');
+        return $this->hasMany('App\Models\Hub','ipID');
     }
 
     public static function ipsArr(){

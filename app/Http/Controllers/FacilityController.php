@@ -1,11 +1,9 @@
-<?php
-// app/Http/Controllers/PostController.php
-
+<?php 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Collection;
+use App\Post;
 use Auth;
+use \Entrust;
 use Session;
 use \App\Models\Facility as Facility;
 class FacilityController extends Controller {
@@ -23,7 +21,10 @@ class FacilityController extends Controller {
     public function index() {
 		//$facilities = \DB::table('facility')->get();
 		//$facilities = Facility::where('id', '!=', '')->get();
-		$query = "SELECT f.id, f.name, f.contactperson, f.phonenumber, h.hubname as hub, fl.level as `facilitylevel`, d.name as district 
+		$can_delete_facility = Entrust::can('delete-facility');
+		$can_update_facility = Entrust::can('Update_facility');
+
+		$query = "SELECT f.id, f.name,  h.hubname as hub, fl.level as `facilitylevel`, d.name as district 
 		FROM facility as f 
 		INNER JOIN facility as h ON (f.parentid = h.id) 
 		INNER JOIN facilitylevel AS fl ON (f.facilitylevelid = fl.id) 
@@ -32,7 +33,7 @@ class FacilityController extends Controller {
 		$facilities = \DB::select($query);
 
 		//exit;
-        return view('facility.list', compact('facilities'));
+        return view('facility.list', compact('facilities','can_delete_facility','can_update_facility'));
         
     }
 
@@ -61,11 +62,14 @@ class FacilityController extends Controller {
          $facility = new Facility;
 		try {
 			$facility->facilitylevelid = $request->facilitylevelid;
-			$facility->hubid = $request->hubid;
+			$facility->parentid = $request->hubid;
 			$facility->name = $request->name;
+			$facility->hubid = $request->hubid;
 			$facility->districtid = $request->districtid;
-			$facility->phonenumber = $request->phonenumber;
-			$facility->contactperson = $request->contactperson;
+			$facility->inchargephonenumber = $request->inchargephonenumber;
+			$facility->incharge = $request->incharge;
+			$facility->labmanagerphonenumber = $request->labmanagerphonenumber;
+			$facility->labmanager = $request->labmanager;
 			$facility->address = $request->address;
 			$facility->email = $request->email;
 			$facility->save();
@@ -103,7 +107,7 @@ class FacilityController extends Controller {
         $hubsdropdown = getAllHubs();
 		$facilityleveldropdown = array_merge_maintain_keys(array('' => 'Select One'),getAllFacilityLevels());
 		$districtdropdown = array_merge_maintain_keys(array('' => 'Select One'),getAllDistricts());
-		$facility = Facility::findOrFail($id);
+        $facility = Facility::findOrFail($id);
        return View('facility.edit', compact('facility','hubsdropdown','facilityleveldropdown','districtdropdown'));
     }
 
@@ -118,13 +122,14 @@ class FacilityController extends Controller {
 		$facility = Facility::findOrFail($id);;
 		try {
 			$facility->facilitylevelid = $request->facilitylevelid;
-			$facility->hubid = $request->hubid;
+			$facility->parentid = $request->hubid;
+			$facility->ipid = $request->ipid;
 			$facility->name = $request->name;
 			$facility->districtid = $request->districtid;
-			$facility->phonenumber = $request->phonenumber;
-			$facility->contactperson = $request->contactperson;
-			$facility->address = $request->address;
-			$facility->email = $request->email;
+			$facility->inchargephonenumber = $request->inchargephonenumber;
+			$facility->incharge = $request->incharge;
+			$facility->labmanagerphonenumber = $request->labmanagerphonenumber;
+			$facility->labmanager = $request->labmanager;
 			$facility->save();
 			return redirect()->route('facility.show', array('id' => $facility->id));
 

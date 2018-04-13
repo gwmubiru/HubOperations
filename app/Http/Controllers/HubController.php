@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Post;
 use Auth;
 use Session;
+use \Entrust;
 use \App\Models\Hub as Hub;
 use \App\Models\Facility as Facility;
 class HubController extends Controller {
@@ -23,12 +24,15 @@ class HubController extends Controller {
      */
 
     public function index() {
-		$query = "SELECT f.id, f.name, f.hubname, f.address, hr.name as healthregion FROM facility f
+		$can_delete_facility = Entrust::can('delete-facility');
+		$can_update_facility = Entrust::can('Update_facility');
+		$query = "SELECT f.id, f.name, f.hubname, f.address, hr.name as healthregion, d.name as `district` FROM facility f
 	INNER JOIN healthregion hr ON(f.healthregionid = hr.id AND ISNULL(f.parentid))
+    INNER JOIN district d ON (f.districtid = d.id)
 		WHERE f.id != ''
 		ORDER BY f.name ASC";
 		$hubs = \DB::select($query);
-        return view('hub.list', compact('hubs'));
+        return view('hub.list', compact('hubs', 'can_delete_facility','can_update_facility'));
     }
 
     /**
@@ -40,7 +44,8 @@ class HubController extends Controller {
       	//$healthregion = getAllHealthRgions();
 		$ips = array_merge_maintain_keys(array('' => 'Select One'), getAllIps());
 		$facilities = array_merge_maintain_keys(array('' => 'Select One'), getAllHubCandidateFacilities());
-      	return View('hub.create', compact('ips','facilities'));
+		$healthregions = array_merge_maintain_keys(array('' => 'Select One'),getAllHealthRgions());
+      	return View('hub.create', compact('ips','facilities', 'healthregions'));
     }
 
     /**
@@ -58,13 +63,14 @@ class HubController extends Controller {
 			$facility->address = $request->address;
 			$facility->type = 2;
 			$facility->ipid = $request->ipid;
-			$facility->parentid = $request->parentid;
+			$facility->parentid = NULL;
+			$facility->healthregionid = $request->healthregionid;
 			$facility->save();
 			return redirect()->route('hub.show', array('id' => $facility->id));
 
 		}catch (\Exception $e) {
-			//print_r('faild to save'.$e);
-			//exit;
+			print_r($e->getMessage());
+			exit;
 			return redirect()->route('hub.create')
             ->with('flash_message', 'failed');
 		}
@@ -78,6 +84,8 @@ class HubController extends Controller {
      */
     public function show($id) {
 		$hub = Facility::findOrFail($id); //Find post of id = $id
+		$can_delete_facility = Entrust::can('delete-facility');
+		$can_update_facility = Entrust::can('Update_facility');
 		//get hub contacts
 		$incharge = getContact($id, 2,1, 'hubid');
 		$hubcordinator = getContact($id, 2,2, 'hubid');
@@ -85,7 +93,7 @@ class HubController extends Controller {
 		$vlfocalperson = getContact($id, 2,3, 'hubid');
 		$eidfocalperson = getContact($id, 2,3, 'hubid');
 		//get the facilities served by the hub
-		$query = "SELECT f.id, f.name, f.contactperson, f.phonenumber, f.hubname as hub, fl.level as `facilitylevel`, d.name as district 
+		$query = "SELECT f.id, f.name, f.incharge, f.inchargephonenumber, f.labmanager, f.labmanagerphonenumber, f.hubname as hub, fl.level as `facilitylevel`, d.name as district 
 		FROM facility as f 
 		INNER JOIN facilitylevel AS fl ON (f.facilitylevelid = fl.id) 
 		INNER JOIN district as d ON(f.districtid = d.id)
@@ -101,7 +109,7 @@ class HubController extends Controller {
 		$saturdayschedule = getHubScheduleforaDay(6, $id);
 		$sundayschedule = getHubScheduleforaDay(7, $id);
 		
-		return view ('hub.show', compact('hub','incharge','hubcordinator','labmanager','vlfocalperson','eidfocalperson','facilities','mondayschedule','tuesdayschedule','wednesdayschedule','thursdayschedule','fridayschedule','saturdayschedule','sundayschedule'));
+		return view ('hub.show', compact('hub','incharge','hubcordinator','labmanager','vlfocalperson','eidfocalperson','facilities','mondayschedule','tuesdayschedule','wednesdayschedule','thursdayschedule','fridayschedule','saturdayschedule','sundayschedule','can_delete_facility','can_update_facility'));
        
     }
 
@@ -113,8 +121,10 @@ class HubController extends Controller {
      */
     public function edit($id) {
          $hub = Facility::findOrFail($id);
+		 $ips = getAllIps();
 		$healthregion = getAllHealthRgions();
-        return view('hub.edit', compact('hub','healthregion'));
+		$supportagencies = array_merge_maintain_keys(array('' => 'Select One'), getAllSupportAgencies());
+        return view('hub.edit', compact('hub','healthregion','ips'));
     }
 
     /**
@@ -156,5 +166,38 @@ class HubController extends Controller {
         return redirect()->route('hub.list')
             ->with('flash_message',
              'Hub successfully deleted');
+    }
+	
+	public function assignfacility(){
+		$facilitydropdown = getAllFacilities();
+		$hubdropdown = \App\Models\Facility::where('parentid', '=', NULL)->pluck('name', 'id');
+		return view('hub.assignfacility', compact('facilitydropdown', 'hubdropdown'));
+	}
+	
+	
+	public function massassignfacilities(Request $request) { 
+		try {
+		   \DB::transaction(function() use($request){
+			   $facilities_to_assign = $request->facilities;
+			   if(count($facilities_to_assign)){
+					for($i = 0; $i < count($facilities_to_assign); $i++){
+						$facility = \App\Models\Facility::findOrFail($facilities_to_assign[$i]);
+						$facility->parentid = $request->hubid;
+						$facility->save();
+					}
+				}
+				
+			});
+			//echo 'bifu';
+			//exit;
+			//return redirect()->route('hub.assignfacility');
+			return redirect()->route('hub.show', array('id' => $request->hubid.'#tab_4'));				
+			
+		}catch (\Exception $e) {
+			print_r($e->getMessage());
+			exit;
+			//return redirect()->route('routingschedule.create')
+            //->with('flash_message', 'failed');
+		}
     }
 }

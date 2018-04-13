@@ -12,7 +12,6 @@
     <div class="nav-tabs-custom">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Bike Details</a></li>
-        <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Daily Routing</a></li>
         <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Bike Break Down</a></li>
         <li class="pull-right"><a href="{{url('equipment/down/hubid/'.$equipment->hub->id.'/id/'.$equipment->id)}}" class="text-muted btn btn-primary"><i class="fa fa-gear"></i> Report Break Down</a></li>
       </ul>
@@ -72,32 +71,11 @@
                   <td>Hub</td>
                   <td>{{ $equipment->hub->name }}</td>
                 </tr>
-                <tr>
-                  <td>Purchased on</td>
-                  <td>{{ date('d/m/Y', strtotime($equipment->purchasedon)) }}</td>
-                </tr>
-                <tr>
-                  <td>Delivered to Hub on</td>
-                  <td>{{ date('d/m/Y', strtotime($equipment->deliveredtohubon)) }}</td>
-                </tr>
-                <tr>
-                  <td>Warranty Period</td>
-                  <td>{{ $equipment->warrantyperiod }}</td>
-                </tr>
-                <tr>
-                  <td>Recommended Service Frequency</td>
-                  <td>{{ $equipment->recommendedservicefrequency }}</td>
-                </tr>
-                <tr>
-                  <td>Has Service Contract</td>
-                  <td>{{ getLookupValueDescription("YES_NO", $equipment->hasservicecontract)}}</td>
-                </tr>
+                
               </tbody>
             </table>
           </div>
         </div>
-        <!-- /.tab-pane -->
-        <div class="tab-pane" id="tab_2"> Coming soon Coming soonComing soonComing soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soonComing soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soonv Coming soon Coming soonComing soon Coming soon Coming soonComing soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soon Coming soonComing soon </div>
         <!-- /.tab-pane -->
         <div class="tab-pane" id="tab_3"> 
         <div class="box box-info" style="border:none;">

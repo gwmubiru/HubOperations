@@ -3,29 +3,7 @@
 @section('title', 'Edit Role: '.$role->name)
 @section('js')
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
- <script>
-	$(document).ready(function() {
-		$('#roleform').bootstrapValidator({
-       
-			fields: {
-				name: {
-						validators: {
-							notEmpty: {
-								message: 'Please enter the permission name'
-							}
-						}
-					},
-					'permissions[]': {
-						validators: {
-							notEmpty: {
-								message: 'Please select atleast one permission'
-							}
-						}
-					}					
-			}//endo of validation rules
-		});// close form validation function
-	});
-</script>
+ 
 @append
 @section('content')
 <div class="box box-info"> @if ($errors->any())

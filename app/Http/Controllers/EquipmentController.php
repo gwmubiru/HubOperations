@@ -24,21 +24,25 @@ class EquipmentController extends Controller {
 	
     public function index() {
 		$where_condition = '';
+		$title = 'View Bike List';
+		$status = '';
 		if(Auth::user()->hasRole('In_charge')){
-			$where_condition = " AND hubid ='".Auth::user()->hubid."'";
+			$where_condition = " AND e.hubid ='".Auth::user()->hubid."'";
 		}
-		$query = "SELECT * FROM equipment
-		WHERE id != '' ".$where_condition."
-		ORDER BY numberplate ASC";
-		//echo $query;
-		//exit;
+		$query = "SELECT e.enginenumber, e.yearofmanufacture, e.status, e.id, e.numberplate, f.name as hub FROM equipment e
+		INNER JOIN facility f ON(e.hubid = f.id)
+		WHERE e.id != '' ".$where_condition."
+		ORDER BY e.numberplate ASC";
 		$equipment = \DB::select($query);
-		//print_R($equipment);
-		//exit;
-        return view('equipment.list', compact('equipment'));
+        return view('equipment.list', compact('equipment', 'status','title'));
         
     }
 	public function elist($status){
+		if($status == 2){
+			$title = 'Bikes Broken Down';
+		}elseif($status == 0){
+			$title = 'Bikes withous Service Contract';
+		}
 		$status_query = '';
 		
 		if(Auth::user()->hasRole('In_charge')){
@@ -48,7 +52,7 @@ class EquipmentController extends Controller {
 		}
 		//print_R($equipment);
 		//exit;
-        return view('equipment.elist', compact('equipment'));
+        return view('equipment.elist', compact('equipment','title'));
 		
 	}
 	public function servicecont($service){
@@ -57,9 +61,8 @@ class EquipmentController extends Controller {
 		}else{
 			$equipment = Equipment::orderby('id', 'desc')->where('hasservicecontract',$service)->paginate(10); 
 		}
-		//print_R($equipment);
-		//exit;
-        return view('equipment.elist', compact('equipment'));		
+		
+        return view('equipment.elist', compact('equipment','status'));		
 	}
     /**
      * Show the form for creating a new resource.

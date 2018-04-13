@@ -15,6 +15,18 @@
                         }
                     }
                 }, 
+      distancefromhub: {
+          validators: {
+              numeric: {
+                  message: 'Please enter a valid value'
+              },
+              between: {
+                        min: -0,
+                        max: 100,
+                        message: 'The distance must be between 0 and 90 KM'
+              }
+          }
+      }, 
 			facilitylevelid: {
                     validators: {
                         notEmpty: {
@@ -72,14 +84,14 @@
                   <label for="name" class="col-sm-2 control-label">{{ Form::label('name', 'Name') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::text('name', null, array('class' => 'form-control', 'id' => 'name')) }}
+                    {{ Form::text('facility', $facility->facility, array('class' => 'form-control', 'id' => 'name')) }}
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="healthregionid" class="col-sm-2 control-label">{{ Form::label('hubid', 'Hub') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('hubid', $hubsdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('hubID', $hubsdropdown, $facility->hubID, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -87,50 +99,52 @@
                   <label for="facilitylevelid" class="col-sm-2 control-label">{{ Form::label('facilitylevelid', 'Level') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('facilitylevelid', $facilityleveldropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('facilityLevelID', $facilityleveldropdown, $facility->facilityLevelID, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
                  <div class="form-group">
-                  <label for="districtid" class="col-sm-2 control-label">{{ Form::label('districtid', 'District') }}</label>
+                  <label for="districtid" class="col-sm-2 control-label">{{ Form::label('districtID', 'District') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('districtid', $districtdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('districtID', $districtdropdown, $facility->districtID, ['class' => 'form-control']) }}
                      
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="distancefromhub" class="col-sm-2 control-label">{{ Form::label('distancefromhub', 'Distance from Hub') }}</label>
-
-                  <div class="col-sm-8">
-                    {{ Form::text('distancefromhub', null, array('class' => 'form-control', 'id' => 'distancefromhub')) }}
-                  </div><div class="col-sm-2">
-                      KM
-                    </div>
-                </div>
-                <div class="form-group">
-                  <label for="contactperson" class="col-sm-2 control-label">{{ Form::label('contactperson', 'Contact Person') }}</label>
-
-                  <div class="col-sm-10">
-                    {{ Form::text('contactperson', null, array('class' => 'form-control', 'id' => 'contactperson')) }}
-                  </div>
-                </div>
-                 <div class="form-group">
-                  <label for="email" class="col-sm-2 control-label">{{ Form::label('email', 'Email Address') }}</label>
-
-                  <div class="col-sm-10">
-                    {{ Form::text('email', null, array('class' => 'form-control', 'id' => 'email')) }}
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="phonenumber" class="col-sm-2 control-label">{{ Form::label('phonenumber', 'Phone Number') }}</label>
-
-                  <div class="col-sm-10">
-                    {{ Form::text('phonenumber', null, array('class' => 'form-control', 'id' => 'phonenumber')) }}
                   </div>
                 </div>
                 
                 <div class="form-group">
+                <label for="distancefromhub" class="col-sm-2 control-label">{{ Form::label('distancefromhub', 'Distance from Hub') }}</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                    {{ Form::text('distancefromhub', $facility->distancefromhub, array('class' => 'form-control', 'id' => 'distancefromhub')) }}
+                    
+                    <span class="input-group-addon">KM</span>
+                  </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="incharge" class="col-sm-2 control-label">{{ Form::label('incharge', 'Incharge') }}</label>
+
+                  <div class="col-sm-5">
+                    {{ Form::text('incharge', $facility->incharge, array('class' => 'form-control', 'id' => 'incharge', 'placeholder' => 'Name')) }}
+                  </div>
+                  <div class="col-sm-5">
+                    {{ Form::text('inchargephonenumber', $facility->inchargephonenumber, array('class' => 'form-control', 'id' => 'inchargephonenumber','placeholder'=>'Phone number')) }}
+                  </div>
+                </div>
+              
+                <div class="form-group">
+                  <label for="labmanager" class="col-sm-2 control-label">{{ Form::label('labmanager', 'Lab Manager') }}</label>
+
+                  <div class="col-sm-5">
+                    {{ Form::text('labmanager', $facility->labmanager, array('class' => 'form-control', 'id' => 'labmanager', 'placeholder' => 'Name')) }}
+                  </div>
+                  <div class="col-sm-5">
+                    {{ Form::text('labmanagerphonenumber', $facility->labmanagerphonenumber, array('class' => 'form-control', 'id' => 'labmanagerphonenumber', 'placeholder' => 'Phone Number')) }}
+                  </div>
+                </div>
+                
+                <div class="form-group hidden">
                   <label for="address" class="col-sm-2 control-label">{{ Form::label('address', 'Physical Address') }}</label>
 
                   <div class="col-sm-10">

@@ -1,6 +1,4 @@
 <?php
-// app/Http/Controllers/PostController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -40,6 +38,10 @@ class RoutingScheduleController extends Controller {
 		//$pagetype = $type;
 		return view('routingschedule.create', compact('facilitydropdown'));
 	}
+	public function createform($hubid){
+		$facilitydropdown = getFacilitiesforHub($hubid);
+		return view('routingschedule.create', compact('facilitydropdown', 'hubid'));
+	}
     /**
      * Store a newly created resource in storage.
      *
@@ -57,7 +59,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($monday_data)){
 					for($i = 0; $i < count($request->monday); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $monday_data[$i];
 						$routingschedule->dayoftheweek = 1;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -68,7 +70,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($tuesday_data)){
 					for($i = 0; $i < count($tuesday_data); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $tuesday_data[$i];
 						$routingschedule->dayoftheweek = 2;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -79,7 +81,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($wednesday_data)){
 					for($i = 0; $i < count($wednesday_data); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $wednesday_data[$i];
 						$routingschedule->dayoftheweek = 3;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -90,7 +92,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($thursday_data)){
 					for($i = 0; $i < count($request->thursday); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $thursday_data[$i];
 						$routingschedule->dayoftheweek = 4;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -101,7 +103,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($friday_data)){
 					for($i = 0; $i < count($friday_data); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $friday_data[$i];
 						$routingschedule->dayoftheweek = 5;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -112,7 +114,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($saturday_data)){
 					for($i = 0; $i < count($saturday_data); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $saturday_data[$i];
 						$routingschedule->dayoftheweek = 6;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -123,7 +125,7 @@ class RoutingScheduleController extends Controller {
 			   if(count($sunday_data)){
 					for($i = 0; $i < count($sunday_data); $i++){
 						$routingschedule = new RoutingSchedule;
-						$routingschedule->hubid = Auth::getUser()->hubid;
+						$routingschedule->hubid = $request->hubid;
 						$routingschedule->facilityid = $sunday_data[$i];
 						$routingschedule->dayoftheweek = 7;
 						$routingschedule->createdby = Auth::getUser()->id;
@@ -134,7 +136,11 @@ class RoutingScheduleController extends Controller {
 			//echo 'bifu';
 			//exit;
 			//send the hubid instead so that you can pick schedule for the hub
-			return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid.'#tab_4'));
+			if(Auth::getUser()->hasRole(['In_charge'])){
+				return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid.'#tab_4'));				
+			}else{
+				return redirect()->route('hub.show', array('id' => $request->hubid.'#tab_4'));				
+			}
 		}catch (\Exception $e) {
 			print_r('faild to save'.$e);
 			exit;
@@ -198,9 +204,7 @@ class RoutingScheduleController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) {
-		
-		
+    public function update(Request $request, $id) {		
 		try {
 		   \DB::transaction(function() use($request, $id){
 			  //delete the previously existing data
@@ -288,7 +292,11 @@ class RoutingScheduleController extends Controller {
 			//echo 'bifu';
 			//exit;
 			//send the hubid instead so that you can pick schedule for the hub
-			return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid.'#tab_4'));
+			if(Auth::getUser()->hasRole(['In_charge'])){
+				return redirect()->route('routingschedule.show', array('id' => Auth::getUser()->hubid.'#tab_4'));				
+			}else{
+				return redirect()->route('hub.show', array('id' => $request->hubid.'#tab_4'));				
+			}
 		}catch (\Exception $e) {
 			print_r('faild to save'.$e);
 			exit;

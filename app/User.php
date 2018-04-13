@@ -3,11 +3,13 @@
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
-
+use Inani\Messager\Helpers\MessageAccessible;
+use Inani\Messager\Helpers\TagsCreator;
 class User extends Authenticatable
 {
     use Notifiable;
 	use EntrustUserTrait;
+	use MessageAccessible, TagsCreator;
 
     /**
      * The attributes that are mass assignable.

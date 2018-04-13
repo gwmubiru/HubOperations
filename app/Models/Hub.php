@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hub extends Model {
 
-	protected $table = 'hub';
+	protected $table = 'facility';
 
 	protected $fillable = ['name','email','address','healthregionid','implementingpartnerid', 'coordinatorid'];
 
@@ -22,5 +22,7 @@ class Hub extends Model {
     	return Hub::leftjoin('ips AS i','i.id', '=','h.ipID')->select('h.*','i.ip')->from("hubs AS h")->get();
     }
 
-
+    public function district(){
+      return $this->belongsTo('App\Models\District','districtid', 'id' );
+    }
 }

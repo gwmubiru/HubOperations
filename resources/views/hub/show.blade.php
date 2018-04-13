@@ -32,7 +32,7 @@
   	<div class="nav-tabs-custom">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Hub Details</a></li>
-        <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Facilities Served</a></li>
+        <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Facilities Served ({{count($facilities)}})</a></li>
         <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Techinical Team</a></li>
         <li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="false">Routing Schedule</a></li>
         <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
@@ -57,10 +57,6 @@
          <tr>
           <td>Code</td>
           <td>@if($hub->code){{ $hub->code }}@endif</td>
-        </tr>
-        <tr>
-          <td>Address</td>
-          <td>{{ $hub->address }}</td>
         </tr>        
       </tbody>
     </table>
@@ -75,20 +71,29 @@
     <table id="facilitylist" class="table table-striped table-bordered">
       <thead>
         <tr>
-          <th>Actions</th>
           <th>Name</th>
           <th>District</th>
           <th>Level</th>
+          @if($can_update_facility || $can_delete_facility)
+          <th>Actions</th>
+          @endif
         </tr></thead>
         <tbody>
       @foreach ($facilities as $facility)
       <tr>
-        <td><a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
-        	<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
-        </td>
+        
         <td><a href="{{ route('facility.show', $facility->id ) }}">{{ $facility->name }}</a></td>
         <td>{{ $facility->district }}</td>
         <td>{{ $facility->facilitylevel }}</td>
+        @if($can_update_facility || $can_delete_facility)
+        <td>
+        @if($can_update_facility)<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
+        @endif
+        @if($can_delete_facility)
+        	<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
+            @endif
+        </td>
+        @endif
       </tr>
       @endforeach
         </tbody>
@@ -486,7 +491,7 @@
       </tbody>
     </table>
     @else
-   <p>This hub has not yet added their routing schedule. Follow-up with them, or create for them one by clickin of the "Create Schedule" button below.
+   <p>This hub has not yet added their routing schedule. Follow-up with them, or create for them one by clicking of the "Create Schedule" button below.
     @endif
     </div>
   </div>
@@ -494,7 +499,7 @@
   @if(count($mondayschedule) || count($tuesdayschedule) || count($wednesdayschedule) || count($thursdayschedule) || count($fridayschedule) || count($saturdayschedule) || count($sundayschedule))
   
   @else
-   <a class="btn btn-primary pull-right" href="{{ route('routingschedule.create') }}">Create Schedule</a>
+   <a class="btn btn-primary pull-right" href="{{ route('routingschedulecreate', ['id' => $hub->id]) }}">Create Schedule</a>
   @endif
   </div>
 </div>

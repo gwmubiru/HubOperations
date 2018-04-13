@@ -61,178 +61,9 @@ desired effect
 <div class="wrapper">
 
   <!-- Main Header -->
-  <header class="main-header">
-
-    <!-- Logo -->
-    <a href="{{ url('/') }}" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>UNHLS</b></span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>UNHLS</b></span>
-    </a>
-
-    <!-- Header Navbar -->
-    <nav class="navbar navbar-static-top" role="navigation">
-      <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-        <span class="sr-only">Toggle navigation</span>
-      </a>
-      <!-- Navbar Right Menu -->
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-         
-          <!-- User Account Menu -->
-          <li class="dropdown notifications-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-             	{{ Auth::user()->name }} <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-                  <li>
-                    <a href="{{ url('/logout') }}">
-                      <i class="fa  fa-sign-out text-aqua"></i> 
-                                            Logout</a>
-                                        
-
-                                        <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
-                                            {{ csrf_field() }}
-                                        </form>
-                    
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-user text-yellow"></i> Profile
-                    </a>
-                  </li>
-                  
-                </ul>
-              </li>
-            </ul>
-          </li>         
-        </ul>
-      </div>
-    </nav>
-  </header>
+  @include('index.header')
   <!-- Left side column. contains the logo and sidebar -->
-  <aside class="main-sidebar">
-
-    <!-- sidebar: style can be found in sidebar.less -->
-    <section class="sidebar">
-
-      <!-- Sidebar user panel (optional) -->
-      
-
-    <!-- Sidebar Menu -->
-      <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">NAVIGATION</li>
-        <!-- Optionally, you can add icons to the links -->
-        <li class="active"><a href="{{ route('dashboard.index') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-        <!--<li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li> -->
-       @role(['Coordinator','Admin']) 
-       	<li class="treeview">
-          <a href="#"><i class="fa fa-user"></i> <span>Manage Users</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a> 
-          
-          <ul class="treeview-menu">
-          @role('Admin')
-          	<li><a href="{{ route('roles.create') }}">Create Role</a></li>
-           	<li><a href="{{ route('roles.index') }}">View All Roles</a></li>
-           @endrole
-            <li><a href="{{ route('users.create') }}">Create User</a></li>
-           	<li><a href="{{ route('users.index') }}">View All Users</a></li>
-          </ul>
-          
-        </li>
-       @endrole
-       @role(['Coordinator','Admin','Regional_hub_coordinator']) 
-       <li class="treeview">
-          <a href="#"><i class="fa fa-institution"></i> <span>Manage IPs</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a> 
-          
-          <ul class="treeview-menu">
-          	<li><a href="{{ route('organization.create') }}">Add New IP</a></li>
-           	<li><a href="{{ route('organization.index') }}">View All IPs</a></li>
-          </ul>
-          
-        </li>
-       <li class="treeview">
-          <a href="#"><i class="fa fa-hospital-o"></i> <span>Manage Hubs</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a> 
-          
-          <ul class="treeview-menu">
-          	<li><a href="{{ route('hub.create') }}">Add New Hub</a></li>
-           	<li><a href="{{ route('hub.index') }}">View All Hubs</a></li>
-          </ul>
-          
-        </li>
-        <li class="treeview">
-          <a href="#"><i class="fa  fa-plus"></i> <span>Manage Facilities</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a> 
-          
-          <ul class="treeview-menu">
-           	<li><a href="{{ route('facility.index') }}">View All Facilities</a></li>
-          </ul>
-          
-        </li>
-        @endrole
-        <li class="treeview">
-          <a href="#"><i class="fa fa-motorcycle"></i> <span>Manage Bikes</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a>
-          <ul class="treeview-menu">
-            @if (!Auth::guest())
-                @role(['Admin','Regional_hub_coordinator','Coordinator']) 
-                	<li><a href="{{ route('equipment.create') }}">Add New Bike</a></li>
-                @endrole
-                	<li><a href="{{ route('equipment.index') }}">View All Bikes</a></li>
-                @role('In_charge') 
-                	<li><a href="{{ route('routingschedule.show', ['id' => Auth::user()->hubid]) }}">Routing Schedule</a></li>
-                    <li><a class="" href="javascript:void(0)"
-                        data-toggle="modal" data-target="#weekend-update">Add Daily Route</a></li>
-                    
-                @endrole
-          @endif
-
-          </ul>
-        </li>
-               
-        <li class="treeview">
-          <a href="#"><i class="fa fa-users"></i> <span>Sample Transporters</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a>
-          <ul class="treeview-menu">
-            @if (!Auth::guest())
-            <li><a href="{{ url('staff/new/1') }}">Add New Sample Transporter</a></li>
-          	<li><a href="{{ url('staff/list/1') }}">View All Sample Transporters</a></li>
-          
-          @endif
-
-          </ul>
-        </li>
-        
-      </ul>
-      <!-- /.sidebar-menu -->
-    </section>
-    <!-- /.sidebar -->
-  </aside>
+  @include('index.leftband')
 
   <!-- Content Wrapper. Contains page content -->
   
@@ -346,23 +177,41 @@ desired effect
   immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
 </div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="weekend-update">
+@role('In_charge')
+<div class="modal fade" tabindex="-1" role="dialog" id="thedate">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Select Date</h4>
+        <h4 class="modal-title">Select the details for the route</h4>
       </div>
       <div class="modal-body">
       	<div class="box box-info no-border"> 
-      	{{ Form::open(array('url' => 'dailyrouting/setweekendingdates', 'class' => 'form-horizontal', 'id' => 'week-ending')) }}
+      	{{ Form::open(array('url' => 'dailyrouting/checkdatedata', 'class' => 'form-horizontal', 'id' => 'routesinitials')) }}
   {{ csrf_field() }}
   
   			<div class="form-group">
               <label for="dateofweek" class="col-sm-3 control-label">{{ Form::label('dateofweek', 'Date') }}</label>
               <div class="col-sm-9">
-                <input name="dateofweek" id="dateofweek" class="form-control" type="text">
+                {{ Form::text('thedate', null, ['class' => 'form-control', 'id' => 'routedate']) }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="dateofweek" class="col-sm-3 control-label">{{ Form::label('dateofweek', 'Date') }}</label>
+              <div class="col-sm-9">
+                {{Form::select('facilityid', array_merge_maintain_keys(array(''=>'Facility'),getFacilitiesforHub(Auth::user()->hubid)), null, ['class'=>'form-control'])}}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="dateofweek" class="col-sm-3 control-label">{{ Form::label('bikeid', 'Motorcyle') }}</label>
+              <div class="col-sm-9">
+                {{Form::select('bikeid', array_merge_maintain_keys(array(''=>'Motorcycle'),getAssignedBikesforHub(Auth::user()->hubid)), null, ['class'=>'form-control'])}}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="transporterid" class="col-sm-3 control-label">{{ Form::label('transporterid', 'Transporter') }}</label>
+              <div class="col-sm-9">
+                {{Form::select('transporterid', array_merge_maintain_keys(array(''=>'Transporter'),getSampleTransportersforHub(Auth::user()->hubid)), null, ['class'=>'form-control'])}}
               </div>
             </div>
   			<div class="box-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -375,12 +224,13 @@ desired effect
       </div>
      </div>
     </div>
+    @endrole
 <!-- ./wrapper -->
 
 <!-- REQUIRED JS SCRIPTS -->
 
-<!-- jQuery 3 -->
 <script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{asset('js/angular.min.js')}}"></script>
 <!-- Bootstrap 3.3.7 -->
 @yield('listpagejs')
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -388,12 +238,13 @@ desired effect
 <!-- AdminLTE App -->
 <script src="{{ asset('js/adminlte.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script> 
-<script src="{{ asset('js/dashboard2.js') }}"></script>
+
+
+<script src="{{ asset('js/dashboard.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="{{ asset('js/demo.js') }}"></script>
 <script>
 	$(document).ready(function() {
-		$('#dateofweek').datepicker({
+		$('#routedate').datepicker({
 		   format: 'mm/dd/yyyy',
            endDate: '+0d',
 		   autoclose: true

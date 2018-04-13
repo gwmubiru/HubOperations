@@ -29,8 +29,15 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
 <body class="hold-transition login-page">
+<div class="container" style="padding-top:20px;">
+	<div class="row">
+    	<div class="col-md-4"><img src="{{ asset('img/aslmlogo.png') }}" class="img-responsive pull-left" width="170"></div>
+        <div class="col-md-4" align="center"><img src="{{ asset('img/coat_of_arms.png') }}" class="img-responsive" width="170"></div>
+        <div class="col-md-4"><img src="{{ asset('img/cdc.png') }}" class="img-responsive pull-right"></div>
+    </div>
+</div>
 <div class="login-box">
-  <div class="login-logo" style="margin-bottom:7px;"><img src="{{ asset('img/coat_of_arms.png') }}" class="img-responsive" width="150" height="150" style="display: block;  margin-left: auto;  margin-right: auto;"> </div>
+	
   <!-- /.login-logo -->
   <div class="login-box-body">
     <form class="" method="POST" action="{{ route('login') }}">
@@ -73,25 +80,7 @@
     <!-- /.social-auth-links --> 
     
     <a href="{{ route('password.request') }}">I forgot my password</a><br>
-    <div class="row">
-      	<div class="col-md-12"> 
-        <h3>Test Login Credentials</h3>
-        	<ul>
-            	<li><strong>National Coordinator</strong>
-                	<ul>
-                    	<li>Username: officer@dev.com</li>
-                        <li>Password: password</li>
-                    </ul>
-                </li>
-                <li><strong>Hub In-charge</strong>
-                <ul>
-                    	<li>Username: incharge@dev.com</li>
-                        <li>Password: password</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-      </div>
+    
   </div>
   <!-- /.login-box-body --> 
 </div>

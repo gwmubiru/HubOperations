@@ -29,14 +29,19 @@
 		return decodeHtmlEntitiesInArray($valuesarray);
 	}
       
-	//get all facilities
+	//get all hubs
 	function getAllHubs(){
-		$hubs = array_merge_maintain_keys(array('' => 'Select One'), \App\Models\Facility::where('parentid', '=', NULL)->pluck('name', 'id'));
+		$hubs = \App\Models\Facility::where('parentid', '=', NULL)->pluck('hubname', 'id');
 		return $hubs;
 	}
 	
+	function getAllFacilities(){
+		$facilities = \App\Models\Facility::where('parentid', '<>', NULL)->pluck('name', 'id');
+		return $facilities;
+	}
+	
 	function getAllHealthRgions(){
-		$healthregions = array_merge_maintain_keys(array('' => 'Select One'), \App\Models\HeathRegion::pluck('name', 'id'));
+		$healthregions = \App\Models\HeathRegion::pluck('name', 'id');
 		return $healthregions;
 	}
 	function getAllSupportAgencies(){
@@ -98,6 +103,16 @@
 	
 	function getUnassignedBikesforHub($hubid){
 		$valuesquery = "SELECT id as optionvalue, numberplate as optiontext FROM equipment  
+		WHERE  hubid = '".$hubid."' ORDER BY optiontext";
+		return getOptionValuesFromDatabaseQuery($valuesquery);
+	}
+	function getAssignedBikesforHub($hubid){
+		$valuesquery = "SELECT id as optionvalue, numberplate as optiontext FROM equipment  
+		WHERE  hubid = '".$hubid."' ORDER BY optiontext";
+		return getOptionValuesFromDatabaseQuery($valuesquery);
+	}
+	function getSampleTransportersforHub($hubid){
+		$valuesquery = "SELECT id as optionvalue, CONCAT(`firstname`,' ',`lastname`) as optiontext FROM staff  
 		WHERE  hubid = '".$hubid."' ORDER BY optiontext";
 		return getOptionValuesFromDatabaseQuery($valuesquery);
 	}

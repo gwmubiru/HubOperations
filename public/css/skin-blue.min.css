@@ -10,3 +10,34 @@ div.dataTables_length select {
     min-width: 60px;
     margin-right: 4px;
 }
+h2.section{
+	margin-left:15px;
+	font-size:16px;
+	font-weight:bold;
+}
+.horizontal-checkbox{
+	list-style-type:none;
+	margin-left: -24px;
+	padding-bottom: 96px;
+}
+.bottom-spaced{
+	padding-bottom: 60px;
+}
+.horizontal-checkbox li{
+	width: 50%;
+	float:left;
+	font-weight: 400;
+}
+.clear{
+	clear:both;
+}
+.bikestate2{
+	color:#F00;
+}
+.box-info.no-border{
+	border:none;
+}
+
+.col-lg-3 h2{
+	color:#eb6b2c;fontSize:14px;
+}

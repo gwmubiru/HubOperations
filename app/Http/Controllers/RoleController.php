@@ -64,9 +64,9 @@ class RoleController extends Controller {
 			$role->perms()->sync($request['permissions']);
 		   });
 		   return redirect()->route('roles.index')->with('flash_message',
-					 'Permission'. $role->display_name.' added!');	
+					 'Permission added!');	
 		}catch (\Exception $e) {
-			print_r($e);
+			print_r($e->getMessage());
 		}
     }
 
@@ -105,7 +105,7 @@ class RoleController extends Controller {
         $role = Role::findOrFail($id);//Get role with the given id
     	//Validate name and permission fields
         $this->validate($request, [
-            'name'=>'required|max:10|unique:roles,name,'.$id,
+            'name'=>'required|max:100|unique:roles,name,'.$id,
             'permissions' =>'required',
         ]);
 		//store all role data excecpt permissions arryay

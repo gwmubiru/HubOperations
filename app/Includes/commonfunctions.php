@@ -358,6 +358,9 @@ function createHTMLListFromArray($array) {
 				$links .= '<li> <a href="'.route('users.create').'">New user</a></li>';
 			}
 			
+		}elseif (strpos($currenturl, 'sampletracking') !== false){
+			$links .= '<li> <a href="'.route('sampletracking.index').'">All Refered Samples</a></li>';
+			$links .= '<li> <a href="'.route('sampletracking.create').'">Refer Sample</a></li>';
 		}
 		return $links;
 	}
@@ -402,7 +405,33 @@ function createHTMLListFromArray($array) {
 		INNER JOIN organization org ON sp.organizationid = org.id";
 		$dates = \DB::select($query);
 		return $dates;
+	}
+	function getFacilitiesForIP($organisationid){
+	$query = "SELECT f.id, f.name, h.hubname as hub, fl.level as `facilitylevel`, d.name as district 
+		FROM facility as f 
+		INNER JOIN facility as h ON (f.parentid = h.id) 
+		INNER JOIN ips_facilities ipf ON (ipf.facilityID = f.id AND ipf.ipID = '".$organisationid."')
+		INNER JOIN ips i ON (ipf.ipID = i.id)
+		INNER JOIN facilitylevel AS fl ON (f.facilitylevelid = fl.id) 
+		INNER JOIN district as d ON(f.districtid = d.id)
+		ORDER BY f.name ASC";
+		$facilities = \DB::select($query);
+		return $facilities;
+	}
+	function getIpsForFacility($facilityid){
+		$query = "SELECT  i.name from ips_facilities ipf
+INNER JOIN facility f ON (ipf.facilityID = f.id)
+INNER JOIN organization i ON (ipf.ipID = i.id AND ipf.facilityID ='".$facilityid."')
+where ISNULL(f.parentid) 
+ORDER BY f.name";
+	$ips = \DB::select($query);
+	$names = array();
+	foreach ($ips as $ip){
+		$names[] = $ip->name;
+	}
+		return implode(", ", $names);
 	} 
+	
 	function getContact($obj, $cat,$type,$table_attribute = 'organizationid'){
 		return \App\Models\Contact::where($table_attribute, $obj)
 											->where('category',$cat)
@@ -490,4 +519,74 @@ function createHTMLListFromArray($array) {
 			$slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
 			return $slug;
 		} 
+	function getTimeString($date){
+		//set the default timezone
+		date_default_timezone_set('Africa/Kampala');
+		$now_seconds = strtotime((new DateTime())->format("Y-m-d H:i:s"));
+		$display_string = '';
+		$message_date = strtotime($date);
+		//$message_date = strtotime('2018-01-17 08:57:22');
+		$seconds = $now_seconds - $message_date;
+		if($seconds < 60){
+			$display_string = $seconds.' seconds ago';
+		}else{
+			$minutes = round($seconds/60);
+			if($minutes < 60){
+				if($minutes < 1){
+					$display_string = $minutes.' minute ago';
+				}else{
+					$display_string = $minutes.' minutes ago';
+				}
+			}else{
+				$hours = round($seconds/(60*60));
+				if($hours < 24){
+					if($hours < 2){
+						$display_string = $hours.' hour ago';
+					}else{
+						$display_string = $hours.' hours ago';
+					}
+				}else{
+					$days = round(($seconds/(60*60))/24);
+					if($days < 6){
+						if($days < 2){
+							$display_string = $days.' day ago';
+						}else{
+							$display_string = $days.' day ago';
+						}
+					}else{
+						$display_string = date('d/m/Y', $message_date);
+					}
+				}
+			}
+		}
+		return $display_string;
+		exit;
+	}
+
+	function generateRationInput($array_data,$field_name, $style = 'inline'){
+		$options_string = '';
+		foreach($array_data as $key =>$value){
+			$options_string .= Form::radio($field_name,  $key ).' 
+			<span class="input-tag">'.$value.' </span>';
+		}
+		return $options_string;
+	}
+	function getPageDateFormat($date){
+		return date('d/m/Y',strtotime($date));
+	}
+	
+	function getMysqlDateFormat($date){
+		return date("Y-m-d", strtotime($date));
+	}
+	function getDailyRoutingForBike($hubid, $bikeid, $thedate){
+		$query = "SELECT dd.numberofsamples, dd.numberofresults, f.name, lv.lookupvaluedescription as category 
+		FROM dailyroutingdetail as dd 
+		INNER JOIN facility as f ON (dd.facilityid = f.id ) 
+		INNER JOIN lookuptypevalue lv ON (lv.id = dd.samplecategory AND lv.lookuptypeid)
+		INNER JOIN lookuptype l ON (l.id = lv.lookuptypeid)
+		WHERE dd.hubid = '".$hubid."' AND dd.bikeid = '".$bikeid."' AND dd.thedate = '".$thedate."'
+		ORDER BY f.name ASC";
+		$dailyroutingdetails = \DB::select($query);
+		return $dailyroutingdetails;
+	}
 ?>

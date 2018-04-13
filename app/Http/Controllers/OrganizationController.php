@@ -100,8 +100,9 @@ class OrganizationController extends Controller {
 		$pmtc = getContact($id, 1,3);
 		
 		$supportperiod = getSupportPeriodDates($organization->id);
+		$facilities = getFacilitiesForIP($organization->id);
 		//$hubssupported = $organization
-        return view ('organization.view', compact('organization','supportperiod', 'careandtreat', 'labtech', 'pmtc'));
+        return view ('organization.view', compact('facilities','organization','supportperiod', 'careandtreat', 'labtech', 'pmtc'));
        
     }
 

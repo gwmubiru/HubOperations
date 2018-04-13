@@ -24,7 +24,7 @@
 				]
 			} );*/
 			 $('#facilitylist').DataTable( {
-				dom: 'Bfrtip',
+				dom: 'Bflrtip',
 				buttons: [
 					
 					{
@@ -70,7 +70,9 @@
         <td>{{ $facility->district }}</td>
         <td>{{ $facility->facilitylevel }}</td>
         <td><a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
+        @if($can_delete_facility)
        	<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
+        @endif
         </td>
 
       </tr>

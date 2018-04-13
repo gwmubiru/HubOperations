@@ -25,18 +25,19 @@ class StaffController extends Controller {
 
     public function index($pagetype) {
 		$where_clause = '';
+		
 		if(Auth::user()->hasRole('In_charge')){
 			//$staff = Staff::where('hubid',Auth::user()->hubid)->Orderby('id', 'desc')->where('type', $pagetype)->paginate(10);
 			$where_clause = "AND s.hubid = '".Auth::user()->hubid."'";
 		}else{
         	//$staff = Staff::Orderby('id', 'desc')->where('type', $pagetype)->paginate(10);
-			$query = "SELECT s.id, s.firstname, s.lastname, s.designation, s.drivingpermit, s.nationalid, f.name as facility 
+		}
+		$query = "SELECT s.id, s.firstname, s.lastname, s.designation, s.hasdrivingpermit, s.hasbbtraining, s.isimmunizedforhb, s.hasdefensiveriding, s.permitexpirydate, s.nationalid, f.name as facility 
 		FROM staff as s 
 		INNER JOIN facility as f ON (s.hubid = f.id) 
 		WHERE s.type = '".$pagetype."'".$where_clause."
 		ORDER BY s.firstname ASC";
 		$staff = \DB::select($query);
-		}
 		return view('staff.index', compact('staff', 'pagetype'));
     }
 
@@ -52,8 +53,9 @@ class StaffController extends Controller {
 		$hubsdropdown = getAllHubs();
 		$bikes = array_merge_maintain_keys(array('' => 'Select one'),getAllUnAssignedBikes());
 		$designation = array_merge_maintain_keys(array('' => 'Select one'),$lt->getOptionValuesAndDescription());
-		//$pagetype = $type;
-		return view('staff.create', compact('pagetype','designation', 'hubsdropdown','bikes'));
+		$lt->name = 'YES_NO';
+		$yes_no = $lt->getOptionValuesAndDescription();
+		return view('staff.create', compact('pagetype','designation', 'hubsdropdown','bikes','yes_no'));
 	}
     /**
      * Store a newly created resource in storage.
@@ -63,22 +65,11 @@ class StaffController extends Controller {
      */
     public function store(Request $request) { 
 		//\Validator::make(['drivingpermit' => 'unique'], ['nationalid' => 'unique'])->passes();
-		 $this->validate($request, [
-			'drivingpermit' => 'nullable|required|max:8|unique:staff',
-			'nationalid' => 'nullable|unique:staff'
-		]);
-		/**
-		 * Get the error messages for the defined validation rules.
-		 *
-		 * @return array
-		 
-		public function messages()
-		{
-			return [
-				'drivingpermit.unique' => 'A sample transporter with the specified permit number already exists',
-				'nationalid.unique'  => 'This person already exists in the system',
-			];
-		}*/
+		//  $this->validate($request, [
+		// 	'drivingpermit' => 'nullable|required|max:8|unique:staff',
+		// 	'nationalid' => 'nullable|unique:staff'
+		// ]);
+		
 		$staff = new Staff;
 		try {
 			//check that the rider being added is not already added
@@ -90,6 +81,7 @@ class StaffController extends Controller {
 			}
 			$staff->type = $request->type;
 			$staff->motorbikeid = $request->motorbikeid;
+			$staff->isactive = 1;
 			$staff->firstname = $request->firstname;
 			$staff->lastname = $request->lastname;
 			$staff->othernames = $request->othernames;
@@ -98,8 +90,13 @@ class StaffController extends Controller {
 			$staff->nationalid = $request->nationalid;
 			
 			$staff->motorbikeid = $request->motorbikeid;
+			$staff->type = $request->type;
 			if($request->type == 1){
-				$staff->drivingpermit = $request->drivingpermit;
+				$staff->hasdrivingpermit = $request->hasdrivingpermit;
+				$staff->hasdefensiveriding = $request->hasdefensiveriding;
+				$staff->hasbbtraining = $request->hasbbtraining;
+				$staff->permitexpirydate = getMysqlDateFormat($request->permitexpirydate);
+				$staff->isimmunizedforhb = $request->isimmunizedforhb;
 			}else{
 				$staff->designation = $request->designation;
 			}
@@ -148,8 +145,9 @@ class StaffController extends Controller {
 		$lt->name = 'DESIGNATIONS';
 		$hubsdropdown = getAllHubs();
 		$designation = array_merge_maintain_keys(array('' => 'Select one'),$lt->getOptionValuesAndDescription());
-		//$pagetype = $type;
-		return view('staff.edit', compact('staff','pagetype','designation', 'hubsdropdown'));
+		$lt->name = 'YES_NO';
+		$yes_no = $lt->getOptionValuesAndDescription();
+		return view('staff.edit', compact('yes_no','staff','pagetype','designation', 'hubsdropdown'));
         
     }
 
@@ -161,15 +159,12 @@ class StaffController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
+    	
 		$staff = Staff::findOrFail($id);
-		$this->validate($request, [
-			'drivingpermit' => 'nullable|required|max:8|unique:staff',
-			'nationalid' => 'nullable|unique:staff'
-		]);
+		
 		try {
 			$staff->facilityid = $request->facilityid;
 			$staff->hubid = $request->facilityid;
-			$staff->type = $request->type;
 			$staff->firstname = $request->firstname;
 			$staff->lastname = $request->lastname;
 			$staff->othernames = $request->othernames;
@@ -177,7 +172,11 @@ class StaffController extends Controller {
 			$staff->telephonenumber = $request->telephonenumber;
 			$staff->nationalid = $request->nationalid;
 			if($request->type == 1){
-				$staff->drivingpermit = $request->drivingpermit;
+				$staff->hasdrivingpermit = $request->hasdrivingpermit;
+				$staff->hasdefensiveriding = $request->hasdefensiveriding;
+				$staff->hasbbtraining = $request->hasbbtraining;
+				$staff->permitexpirydate = getMysqlDateFormat($request->permitexpirydate);
+				$staff->isimmunizedforhb = $request->isimmunizedforhb;
 			}else{
 				$staff->designation = $request->designation;
 			}
@@ -187,6 +186,7 @@ class StaffController extends Controller {
 		}catch (\Exception $e) {
 			
 			print_r('faild to save'.$e);
+			exit;
 			return redirect()->url('staff/new/'.$request->type)
             ->with('flash_message', 'failed');
 		}

@@ -8,7 +8,8 @@ class Staff extends Model {
 	protected $table = "staff";
 	//specify the fields that must be filled
     protected $fillable = [
-        'facilityid', 'firstname', 'lastname', 'othernames', 'emailaddress', 'telephonenumber', 'drivingpermit', 'designation', 'type', 'nationalid'
+        'facilityid', 'firstname', 'lastname', 'othernames', 'emailaddress', 'telephonenumber', 
+        'hasbbtraining', 'hasdefensiveriding', 'designation', 'type', 'nationalid','permitexpirydate'
     ];
 	
 	public static $rules = [
@@ -23,7 +24,7 @@ class Staff extends Model {
 	*/
 	public function facility()
 	{
-		return $this->belongsTo('App\Models\Facility', 'facilityid', 'id');
+		return $this->belongsTo('App\Models\Facility', 'hubid', 'id');
 	}
 	/**
 	* Relationship with bike
@@ -31,5 +32,9 @@ class Staff extends Model {
 	public function bike()
 	{
 		return $this->hasOne('App\Models\Equipment', 'id', 'motorbikeid');
+	}
+	
+	public function getFullName(){
+		return $this->firstname.' '.$this->lastname;
 	}
 }

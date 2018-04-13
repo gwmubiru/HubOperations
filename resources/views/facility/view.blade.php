@@ -14,7 +14,7 @@
       <tbody>
       <tr>
           <td>Name</td>
-          <td>{{ $facility->name }}</td>
+          <td>{{ $facility->facility }}</td>
         </tr>
         <tr>
           <td>District</td>
@@ -22,23 +22,23 @@
         </tr>
         <tr>
           <td>Hub</td>
-          <td>{{ $facility->hub->name}}</td>
+          <td>{{ $facility->hub->hub}}</td>
         </tr>
         <tr>
           <td>Level</td>
-          <td>{{ $facility->facilitylevel->level }}</td>
+          <td>{{ $facility->facilitylevel->facility_level }}</td>
+        </tr>
+         <tr>
+          <td>Distance from hub</td>
+          <td>{{ $facility->distancefromhub }} KM</td>
         </tr>
         <tr>
-          <td>Contact Person</td>
-          <td>{{ $facility->contactperson }}</td>
+          <td>In-charge</td>
+          <td>{{ $facility->incharge }}, {{ $facility->inchargephonenumber }}</td>
         </tr>
         <tr>
-          <td>Email Address</td>
-          <td>{{ $facility->email }}</td>
-        </tr>
-        <tr>
-          <td>Physical Address</td>
-          <td>{{ $facility->address }}</td>
+          <td>Lab Manager</td>
+          <td>{{ $facility->labmanager }}, {{ $facility->labmanagerphonenumber }}</td>
         </tr>
       </tbody>
     </table>
