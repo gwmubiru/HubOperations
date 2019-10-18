@@ -75,7 +75,9 @@ desired effect
       </h1>
        <ul class="list-inline context-menu">
       	<li><a href="{{route('dashboard.index')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-       <?php echo generateContextMenu(Request::url());?>
+       @role(['hub_coordinator','administrator','national_hub_coordinator'])
+	   <?php echo generateContextMenu(Request::url());?>
+       @endrole
       </ul>
     </section>
 
@@ -97,7 +99,7 @@ desired effect
       
     </div>
     <!-- Default to the left -->
-    <strong>Copyright &copy; 2017 <a href="#">UNHLS</a>.</strong> All rights reserved.
+    <strong>Copyright &copy; {{date('Y')}} <a href="#">UNHLS</a>.</strong> All rights reserved.
   </footer>
 
   <!-- Control Sidebar -->
@@ -230,7 +232,6 @@ desired effect
 <!-- REQUIRED JS SCRIPTS -->
 
 <script src="{{ asset('js/jquery.min.js') }}"></script>
-<script src="{{asset('js/angular.min.js')}}"></script>
 <!-- Bootstrap 3.3.7 -->
 @yield('listpagejs')
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -240,15 +241,31 @@ desired effect
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script> 
 
 
-<script src="{{ asset('js/dashboard.js') }}"></script>
+<script src="{{ asset('js/hom.js') }}"></script>
+
 <!-- AdminLTE for demo purposes -->
 <script>
 	$(document).ready(function() {
-		$('#routedate').datepicker({
+		$('#routedate,#datebrokendown, #datereported').datepicker({
 		   format: 'mm/dd/yyyy',
            endDate: '+0d',
 		   autoclose: true
 		});
+		//on selecting a hub, get the facilities it serves
+		$("select[name='hubid']").change(function(){
+		  var hubid = $(this).val();
+		  var hiddenvalue = $("input[name='_token']").val();
+		  
+		  $.ajax({
+			  url: "<?php echo url('dailyrouting/facilitiesforhub'); ?>",
+			  method: 'POST',
+			  data: {hubid:hubid, _token:hiddenvalue},
+			  success: function(data) {
+				  	$("select[name='facilityid'").empty();
+					$("select[name='facilityid'").html(data.options);
+				  }
+			  });
+		  });
 	});
 </script>
 </body>

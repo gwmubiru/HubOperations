@@ -9,6 +9,7 @@ use Session;
 
 use \App\Models\LookupType as LookupType;
 use \App\Models\Staff as Staff;
+use \App\Models\User as User;
 use \App\Models\Equipment as Equipment;
 
 class StaffController extends Controller {
@@ -26,7 +27,7 @@ class StaffController extends Controller {
     public function index($pagetype) {
 		$where_clause = '';
 		
-		if(Auth::user()->hasRole('In_charge')){
+		if(Auth::user()->hasRole('hub_coordinator')){
 			//$staff = Staff::where('hubid',Auth::user()->hubid)->Orderby('id', 'desc')->where('type', $pagetype)->paginate(10);
 			$where_clause = "AND s.hubid = '".Auth::user()->hubid."'";
 		}else{
@@ -34,9 +35,11 @@ class StaffController extends Controller {
 		}
 		$query = "SELECT s.id, s.firstname, s.lastname, s.designation, s.hasdrivingpermit, s.hasbbtraining, s.isimmunizedforhb, s.hasdefensiveriding, s.permitexpirydate, s.nationalid, f.name as facility 
 		FROM staff as s 
-		INNER JOIN facility as f ON (s.hubid = f.id) 
-		WHERE s.type = '".$pagetype."'".$where_clause."
+		LEFT JOIN facility as f ON (s.hubid = f.id) 
+		WHERE s.designation = ".$pagetype." ".$where_clause."
 		ORDER BY s.firstname ASC";
+		//echo $query;
+		//exit;
 		$staff = \DB::select($query);
 		return view('staff.index', compact('staff', 'pagetype'));
     }
@@ -74,7 +77,7 @@ class StaffController extends Controller {
 		try {
 			//check that the rider being added is not already added
 			$staff->facilityid = $request->facilityid;
-			if(Auth::user()->hasRole('In_charge')){
+			if(Auth::user()->hasRole('hub_coordinator')){
 				$staff->hubid = Auth::user()->hubid;
 			}else{
 				$staff->hubid = $request->facilityid;
@@ -88,17 +91,17 @@ class StaffController extends Controller {
 			$staff->emailaddress = $request->emailaddress;
 			$staff->telephonenumber = $request->telephonenumber;
 			$staff->nationalid = $request->nationalid;
+			$staff->code = $request->code;
 			
 			$staff->motorbikeid = $request->motorbikeid;
 			$staff->type = $request->type;
+			$staff->designation = $request->type;
 			if($request->type == 1){
 				$staff->hasdrivingpermit = $request->hasdrivingpermit;
 				$staff->hasdefensiveriding = $request->hasdefensiveriding;
 				$staff->hasbbtraining = $request->hasbbtraining;
 				$staff->permitexpirydate = getMysqlDateFormat($request->permitexpirydate);
 				$staff->isimmunizedforhb = $request->isimmunizedforhb;
-			}else{
-				$staff->designation = $request->designation;
 			}
 			$staff->save();
 			//now add the transporter to the bike, if adding sample transporter
@@ -109,8 +112,34 @@ class StaffController extends Controller {
 					$bike->save();
 				}
 			}
-			
-			return redirect()->route('staff.show', array('id' => $staff->id));
+		
+		//create a user for the staff member
+		$user = new User;
+		if(empty($request->emailaddress)){
+			$user->email = date('ymdhi').'@dev.com';
+		}else{
+			$user->email = $request->emailaddress;
+		}
+		$roles = array();
+		if($request->type == 1){
+			$roles = array(15);
+		}elseif($request->type == 2 && Auth::user()->hubid == 2490){
+			$roles = array(12);
+		}elseif($request->type ==4){
+			$roles = array(15);
+		}elseif($request->type ==5){
+			$roles = array(13);
+		}
+
+		$user->name = $request->firstname.' '.$request->lastname;
+		$user->setPasswordAttribute('password');
+		$user->hubid = Auth::user()->hubid;
+		$user->username = $request->firstname;		
+		$user->save();	
+		$user->roles()->attach($roles);
+		
+		
+		return redirect()->route('staff.show', array('id' => $staff->id));
 
 		}catch (\Exception $e) {
 			
@@ -171,7 +200,8 @@ class StaffController extends Controller {
 			$staff->emailaddress = $request->emailaddress;
 			$staff->telephonenumber = $request->telephonenumber;
 			$staff->nationalid = $request->nationalid;
-			if($request->type == 1){
+			
+			if($staff->type == 1){
 				$staff->hasdrivingpermit = $request->hasdrivingpermit;
 				$staff->hasdefensiveriding = $request->hasdefensiveriding;
 				$staff->hasbbtraining = $request->hasbbtraining;

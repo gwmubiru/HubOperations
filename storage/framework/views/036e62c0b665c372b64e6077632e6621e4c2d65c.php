@@ -67,9 +67,10 @@
         <td><?php echo e($facility->hub); ?></td>
         <td><?php echo e($facility->district); ?></td>
         <td><?php echo e($facility->facilitylevel); ?></td>
-        <td><a href="<?php echo e(route('facility.edit', $facility->id )); ?>"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
+        <td><?php if(Entrust::can('Update_facility')): ?><a href="<?php echo e(route('facility.edit', $facility->id )); ?>"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;<?php endif; ?>
+        <a href="<?php echo e(route('facility.printqr', $facility->id)); ?>" target="_blank"><i class="fa fa-fw fa-qrcode"></i> Print QR code</a>
         <?php if($can_delete_facility): ?>
-       	<a href="<?php echo e(route('facility.edit', $facility->id )); ?>"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
+       &nbsp;<a href="<?php echo e(route('facility.edit', $facility->id )); ?>"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
         <?php endif; ?>
         </td>
 

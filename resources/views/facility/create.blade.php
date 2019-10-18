@@ -72,14 +72,14 @@
                   <label for="name" class="col-sm-2 control-label">{{ Form::label('name', 'Name') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::text('facility', null, array('class' => 'form-control', 'id' => 'name')) }}
+                    {{ Form::text('name', null, array('class' => 'form-control', 'id' => 'name')) }}
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="healthregionid" class="col-sm-2 control-label">{{ Form::label('hubid', 'Hub') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('hubID', $hubsdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('hubid', $hubsdropdown, null, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -87,7 +87,7 @@
                   <label for="facilitylevelid" class="col-sm-2 control-label">{{ Form::label('facilitylevelid', 'Level') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('facilityLevelID', $facilityleveldropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('facilitylevelid', $facilityleveldropdown, null, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -95,7 +95,7 @@
                   <label for="districtid" class="col-sm-2 control-label">{{ Form::label('districtid', 'District') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('districtID', $districtdropdown, null, ['class' => 'form-control']) }}
+                    {{ Form::select('districtid', $districtdropdown, null, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>

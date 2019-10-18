@@ -37,8 +37,8 @@
                     <td>{{ $user->created_at->format('F d, Y') }}</td>
                     <td>{{  $user->roles()->pluck('display_name')->implode(', ') }}</td>{{-- Retrieve array of roles associated to a user and convert to string --}}
                     <td>
-                    <a href="{{ route('users.edit', $user->id) }}"> <i class="fa fa-fw fa-edit"></i>Edit</a>
-					<a href="{{ route('users.destroy', $user->id) }}"> <i class="fa fa-fw fa-trash-o"></i>Delete</a>
+                    <a href="{{ route('users.edit', $user->id) }}"> <i class="fa fa-fw fa-edit"></i> Edit</a>
+					<a href="{{ route('users.destroy', $user->id) }}"> <i class="fa fa-ban"></i> De-activate</a>
                     {!! Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id] ]) !!}
                     {!! Form::close() !!}
 

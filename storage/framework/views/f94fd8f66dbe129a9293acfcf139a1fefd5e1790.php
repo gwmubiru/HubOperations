@@ -1,7 +1,12 @@
 <?php if($pagetype == 1): ?>
-	<?php $__env->startSection('title', 'View All Sample Transporters'); ?>
+	<?php $__env->startSection('title', 'All Sample Transporters'); ?>
+<?php elseif($pagetype == 4): ?>
+	<?php $__env->startSection('title', 'All Drivers'); ?>
+<?php elseif($pagetype == 2): ?>
+	<?php $__env->startSection('title', 'All Sample Receptionists'); ?>
+<?php elseif($pagetype == 5): ?>	
+	<?php $__env->startSection('title', 'All EOC Staff Members '); ?>
 <?php else: ?>
-	<?php $__env->startSection('title', 'View All Staff Members'); ?>
 <?php endif; ?>
 
 <?php $__env->startSection('content'); ?>
@@ -12,7 +17,7 @@
 <script src="<?php echo e(asset('js/jquery.dataTables.min.js')); ?>"></script>
     <script>
 		$(document).ready(function() {
-			$('#listtable').DataTable();
+			$('#stafflisttable').DataTable();
 		} );
 	</script>
 <?php $__env->appendSection(); ?>
@@ -20,12 +25,14 @@
   
   <!-- /.box-header -->
   <div class="box-body table-responsive">
-    <table id="listtable" class="table table-striped table-bordered">
+    <table id="stafflisttable" class="table table-striped table-bordered">
     <thead>
     	<tr>
           <th>First Name</th>
           <th>Last Name</th>
+          <?php if($pagetype == 2 || $pagetype == 1 || $pagetype == 3): ?>
           <th>Hub</th>
+          <?php endif; ?>
           <?php if($pagetype == 2): ?>
           <th>Designation</th>
           <?php endif; ?>
@@ -45,7 +52,9 @@
       <tr>
         <td><a href="<?php echo e(route('staff.show', $st->id )); ?>"><?php echo e($st->firstname); ?></a></td>
         <td><?php echo e($st->lastname); ?></td>
+         <?php if($pagetype == 2 || $pagetype == 1 || $pagetype == 3): ?>
         <td><?php echo e($st->facility); ?></td>
+        <?php endif; ?>
         <?php if($pagetype == 2): ?>
         <td><?php echo e($st->designation); ?></td>
         <?php endif; ?>

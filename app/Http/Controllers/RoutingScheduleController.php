@@ -36,7 +36,7 @@ class RoutingScheduleController extends Controller {
 		$hubid = Auth::getUser()->hubid; 
 		$facilitydropdown = getFacilitiesforHub($hubid);
 		//$pagetype = $type;
-		return view('routingschedule.create', compact('facilitydropdown'));
+		return view('routingschedule.create', compact('facilitydropdown','hubid'));
 	}
 	public function createform($hubid){
 		$facilitydropdown = getFacilitiesforHub($hubid);

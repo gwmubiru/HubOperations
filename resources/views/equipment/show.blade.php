@@ -13,7 +13,16 @@
       <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Bike Details</a></li>
         <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Bike Break Down</a></li>
-        <li class="pull-right"><a href="{{url('equipment/down/hubid/'.$equipment->hub->id.'/id/'.$equipment->id)}}" class="text-muted btn btn-primary"><i class="fa fa-gear"></i> Report Break Down</a></li>
+        <li class="pull-right">
+        @if($equipment->status == 2)
+        <a class="btn btn-sm btn-info text-muted" href="javascript:void(0)"
+                        data-toggle="modal" data-target="#status-update">
+                  <span class="fa fa-thumbs-o-up"></span>
+                        Mark bike fixed</a>
+        @else
+        <a href="{{route('equipment.breakdown',['hubid' => $equipment->hub->id, 'id' => $equipment->id])}}" class="text-muted btn btn-primary"><i class="fa fa-gear"></i> Report Break Down</a>
+        @endif
+        </li>
       </ul>
       <div class="tab-content">
         <div class="tab-pane active" id="tab_1">

@@ -59,7 +59,7 @@
       <tr>
        
         <td><a href="{{ route('equipment.show', $eq->id ) }}">{{ $eq->numberplate }}</a></td>
-        <td>{{ $eq->hub }}</td>
+        <td>{{ $eq->hub->hubname }}</td>
         <td>{{ $eq->enginenumber }}</td>
         <td>{{ $eq->yearofmanufacture }}</td> @role('Admin','Program_officer')<td><a href="{{ route('equipment.edit', $eq->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
         	<a href="{{ route('equipment.destroy', $eq->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>

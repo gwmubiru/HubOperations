@@ -9,12 +9,12 @@
   </div>
   <!-- /.box-header -->
   <div class="box-body no-padding">
-  <div class="col-xs-12 table-responsive">
+  <div class="col-xs-12 table-responsive">  
     <table class="table">
       <tbody>
       <tr>
           <td>Name</td>
-          <td>{{ $facility->facility }}</td>
+          <td>{{ $facility->name }}</td>
         </tr>
         <tr>
           <td>District</td>
@@ -22,11 +22,11 @@
         </tr>
         <tr>
           <td>Hub</td>
-          <td>{{ $facility->hub->hub}}</td>
+          <td>{{ $facility->hub->hubname}}</td>
         </tr>
         <tr>
           <td>Level</td>
-          <td>{{ $facility->facilitylevel->facility_level }}</td>
+          <td>{{ $facility->facilitylevel->level }}</td>
         </tr>
          <tr>
           <td>Distance from hub</td>
@@ -40,6 +40,12 @@
           <td>Lab Manager</td>
           <td>{{ $facility->labmanager }}, {{ $facility->labmanagerphonenumber }}</td>
         </tr>
+        @role(['administrator','national_hub_coordinator']) 
+        <tr>
+        	<td></td>
+            <td> <a href="{{route('facility.printqr', $facility->id)}}" target="_blank">Print code</a>{!! QrCode::generate($facility->id)!!}</td>
+        </tr>
+        @endrole
       </tbody>
     </table>
     </div>

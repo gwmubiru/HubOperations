@@ -1,13 +1,41 @@
 @extends('layouts.app')
-@if ($pagetype == 1)
+@if ($staff->type == 1)
 	@section('title', 'Update Sample Transporter')
+@elseif($staff->type == 2)
+	@section('title', 'Update Sample Receptionist')
+@elseif($staff->type == 4)
+	@section('title', 'Update Driver')
+@elseif($staff->type == 5)
+	@section('title', 'Update EOC Staff Member')
 @else
-	@section('title', 'Update Staff Member')
 @endif
 @section('js')
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
  <script>
 	$(document).ready(function() {
+		
+		$('#permitexpirydate').datepicker({
+		   format: 'mm/dd/yyyy',
+		   autoclose: true
+		});
+		
+	$("input[name='hasdrivingpermit']").change(function(){
+		if( $(this).is(":checked") ){ // check if the radio is checked
+            var val = $(this).val(); // retrieve the value
+			//alert(val);
+			if(val == 1){
+				$('#permitexpirydate').removeClass('hidden');
+			}else{
+				$('#permitexpirydate').val('');
+				$('#permitexpirydate').addClass('hidden');
+			}
+        }	
+		
+	});
+	$("input[name='permitexpirydate']").change(function(){
+		$('#staffform').bootstrapValidator('revalidateField', 'permitexpirydate');
+	});
+		
 		$('#staffform').bootstrapValidator({
        
         fields: {
@@ -91,6 +119,13 @@
                         }
                     }
                 },
+		code: {
+            validators: {
+                notEmpty: {
+                    message: 'Please the code the user will use to login into the mobile app'
+                }
+             }
+        },
           email: {          
         validators: {
               regexp: {
@@ -113,6 +148,7 @@
             {{ Form::model($staff, array('route' => array('staff.update', $staff->id),  'class' => 'form-horizontal', 'id' => 'staffform', 'method' => 'PUT')) }}
             	{{ csrf_field() }}
               <div class="box-body">
+              @role(['administrator','national_hub_coordinator']) 
               <div class="form-group">
                   <label for="facility" class="col-sm-2 control-label">{{ Form::label('facility', 'Hub') }}</label>
 
@@ -121,8 +157,9 @@
                      
                   </div>
                 </div>
+                @endrole
               @if ($pagetype == 2)
-              	<div class="form-group">
+              	<div class="form-group" style="display:none">
                   <label for="designation" class="col-sm-2 control-label">{{ Form::label('designation', 'Designation') }}</label>
 
                   <div class="col-sm-10">
@@ -166,6 +203,14 @@
                     {{ Form::text('telephonenumber', null, array('class' => 'form-control', 'id' => 'telephonenumber')) }}
                   </div>
                 </div>
+                <div class="form-group">
+                  <label for="code" class="col-sm-2 control-label">{{ Form::label('code', 'Mobile App Login Code') }}</label>
+
+                  <div class="col-sm-10">
+                    {{ Form::text('code', null, array('class' => 'form-control', 'id' => 'code')) }}
+                  </div>
+                </div>
+                
                 @if ($pagetype == 1)
                     <div class="form-group">
                       <label for="drivingpermit" class="col-sm-2 control-label">{{ Form::label('drivingpermit', 'Has Driving Permit') }}</label>
@@ -224,7 +269,9 @@
               <!-- /.box-body -->
               <div class="box-footer">
                 <a class="btn btn-danger btn-sm" href="{{ URL::previous() }}">Cancel</a>
-                {{ Form::submit('Update Sample Transporter', array('class' => 'btn btn-sm btn-warning pull-right')) }}
+               
+                {{ Form::submit('Update', array('class' => 'btn btn-sm btn-warning pull-right')) }}
+                
               </div>
               <!-- /.box-footer -->
             

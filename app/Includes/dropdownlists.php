@@ -80,7 +80,7 @@
 	
 	//get all facilities
 	function getAllUnAssignedBikes(){
-		if(Auth::user()->hasRole('In_charge')){
+		if(Auth::user()->hasRole('hub_coordinator')){
 			$sampletransporters = \App\Models\Equipment::where('type', '=', 1)->where('isassigned', 0)->where('hubid', Auth::user()->hubid)->pluck('numberplate', 'id');
 		}else{
 			$sampletransporters = \App\Models\Equipment::where('type', '=', 1)->where('isassigned', 0)->pluck('numberplate', 'id');
@@ -123,5 +123,18 @@
 			$select_string .= '<option value="'.$key.'">'.$value.'</option>';
 		}
 		return $select_string;
+	}
+	function getCphlPackageStatus(){
+		$status_array = array(1 => 'In Transit',2 => 'Delivered', 3 => 'Received');
+		return $status_array;
+	}
+	function getHubPackageStatus(){
+		$status_array = array(1 => 'In Transit to hub', 2 => 'Delivered at hub', 3 => 'Received at hub',
+								4 => 'Waiting Pickup', 5 => 'In transit to CPHL', 6 => 'Deliverd at Cphl', 7 => 'Received at Cphl');
+		return $status_array;
+	}
+	function getHubPackageStatusLabel(){
+		$status_array = array(1 => 'In Transit to ', 2 => 'Delivered at ', 3 => 'Received at ');
+		return $status_array;
 	}
 ?>

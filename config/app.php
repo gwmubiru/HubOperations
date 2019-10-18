@@ -164,7 +164,8 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 		Maatwebsite\Excel\ExcelServiceProvider::class,
 		Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
-
+		SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+		Laravel\Passport\PassportServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -234,7 +235,8 @@ return [
 		'Form' => Collective\Html\FormFacade::class,
      	'Html' => Collective\Html\HtmlFacade::class,
 		'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-		'Lava' => Khill\Lavacharts\Laravel\LavachartsFacade::class
+		'Lava' => Khill\Lavacharts\Laravel\LavachartsFacade::class,
+		'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
     ],
 
 ];

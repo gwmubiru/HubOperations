@@ -1,8 +1,13 @@
 @extends('layouts.app')
 @if ($pagetype == 1)
-	@section('title', 'View All Sample Transporters')
+	@section('title', 'All Sample Transporters')
+@elseif($pagetype == 4)
+	@section('title', 'All Drivers')
+@elseif($pagetype == 2)
+	@section('title', 'All Sample Receptionists')
+@elseif($pagetype == 5)	
+	@section('title', 'All EOC Staff Members ')
 @else
-	@section('title', 'View All Staff Members')
 @endif
 
 @section('content')
@@ -13,7 +18,7 @@
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
     <script>
 		$(document).ready(function() {
-			$('#listtable').DataTable();
+			$('#stafflisttable').DataTable();
 		} );
 	</script>
 @append
@@ -21,12 +26,14 @@
   
   <!-- /.box-header -->
   <div class="box-body table-responsive">
-    <table id="listtable" class="table table-striped table-bordered">
+    <table id="stafflisttable" class="table table-striped table-bordered">
     <thead>
     	<tr>
           <th>First Name</th>
           <th>Last Name</th>
+          @if($pagetype == 2 || $pagetype == 1 || $pagetype == 3)
           <th>Hub</th>
+          @endif
           @if($pagetype == 2)
           <th>Designation</th>
           @endif
@@ -46,7 +53,9 @@
       <tr>
         <td><a href="{{ route('staff.show', $st->id ) }}">{{ $st->firstname }}</a></td>
         <td>{{ $st->lastname }}</td>
+         @if($pagetype == 2 || $pagetype == 1 || $pagetype == 3)
         <td>{{ $st->facility }}</td>
+        @endif
         @if($pagetype == 2)
         <td>{{ $st->designation }}</td>
         @endif

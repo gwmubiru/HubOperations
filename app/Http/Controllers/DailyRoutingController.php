@@ -33,7 +33,7 @@ class DailyRoutingController extends Controller {
 	public function sampleList(Request $request){
 			// get the samples for this month
 			$hubs = array_merge_maintain_keys(array('' => 'Select a hub'), getAllHubs());
-			$facilities = array_merge_maintain_keys(array('' => 'Select a facility'), getAllFacilities());
+			$facilities = array('' => 'Filter by facility');
 			$districts = array_merge_maintain_keys(array('' => 'Select a district'), getAllDistricts());
 			
 			$incharge_clause = '';
@@ -43,7 +43,8 @@ class DailyRoutingController extends Controller {
 			}
 			$graph_title = 'Samples last month';
 			$where_clause = '';
-			$where = 'WHERE MONTH(thedate) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)';
+			//$where = 'WHERE MONTH(thedate) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)';
+			$where = 'WHERE YEARWEEK(`thedate`) = YEARWEEK(CURDATE())';
 			$filters = $request->all();
 			if(!empty($filters)){
 				$graph_title = 'Samples for selected options';
@@ -61,7 +62,7 @@ class DailyRoutingController extends Controller {
 					$where_clause .= ' AND d.id = '.$filters['districtid'];
 				}
 			}
-			$query = "SELECT h.hubname as hub, d.name as district, f.name as facility,
+			$query = "SELECT h.hubname as hub, d.name as district, f.name as facility, f.hubname as althubname,
 	SUM(CASE WHEN s.samplecategory = 1 THEN s.numberofsamples END) AS `VL`,
 	SUM(CASE WHEN s.samplecategory = 2 THEN s.numberofsamples  END) AS `HIVEID`,
 	SUM(CASE WHEN s.samplecategory = 3 THEN s.numberofsamples  END) AS `SickleCell`,
@@ -78,16 +79,20 @@ class DailyRoutingController extends Controller {
 	LEFT JOIN  facility AS h ON (f.parentid = h.id)
 	LEFT JOIN  district AS d ON (f.districtid = d.id)
 	 ".$where.$where_clause.$incharge_clause."
-	GROUP BY s.facilityid ASC";
+	GROUP BY s.samplecategory,s.facilityid, h.hubname, d.name, f.name,f.hubname ASC";
 	
 	$samples = \DB::select($query);
-		 
-		$query = "SELECT lv.lookupvaluedescription as sampletype, SUM(s.numberofsamples) AS samples
+		// get the samples for this week
+			$query = "SELECT lv.lookupvaluedescription as sampletype, SUM(s.numberofsamples) AS samples
 	FROM samples s 
 	INNER JOIN lookuptypevalue lv ON(lv.lookuptypevalue = s.samplecategory)
-	INNER JOIN lookuptype l ON(l.id = lv.lookuptypeid AND lv.lookuptypeid = 18 )
-	".$where.$where_clause.$incharge_clause."
+	INNER JOIN lookuptype l ON(l.id = lv.lookuptypeid)
+	LEFT JOIN  facility f ON (f.id = s.facilityid)
+	LEFT JOIN  facility AS h ON (f.parentid = h.id)
+	".$where.$where_clause.$incharge_clause." AND lv.lookuptypeid = 18 
 	GROUP BY lv.lookupvaluedescription ASC";
+	//echo $query;
+	//exit;
 		   $samples_graph = \DB::select($query);
 		 
 		 $samplestable = lava::DataTable();
@@ -100,7 +105,7 @@ class DailyRoutingController extends Controller {
 			}
 			//$chart = lava::LineChart('samples', $stocksTable);			
 			lava::ColumnChart('samples', $samplestable, [
-				'title' => $graph_title,
+				'title' => ' Samples this week',
 				'titleTextStyle' => [
 					'color'    => '#eb6b2c',
 					'fontSize' => 14
@@ -143,6 +148,7 @@ class DailyRoutingController extends Controller {
 					$where_clause .= ' AND d.id = '.$filters['districtid'];
 				}
 			}
+			//SELECT * FROM items WHERE created_at > DATE_SUB(NOW(), INTERVAL 1 WEEK);
 			$query = "SELECT h.hubname as hub, d.name as district, f.name as facility,
 	SUM(CASE WHEN s.samplecategory = 1 THEN s.numberofresults END) AS `VL`,
 	SUM(CASE WHEN s.samplecategory = 2 THEN s.numberofresults  END) AS `HIVEID`,
@@ -462,5 +468,38 @@ class DailyRoutingController extends Controller {
      */
     public function destroy($id) {
        
+    }
+	/*
+	* Facilities not visited in a given week
+	*
+	*/
+	public function notVisited($status){
+		if($status == 2){
+			$title = 'Bikes Broken Down';
+		}elseif($status == 0){
+			$title = 'Bikes withous Service Contract';
+		}
+		//facilities not visited last week
+		$query = 'select f.id, f.name as facilityname, h.hubname, d.name as district from 
+		facility f
+		INNER JOIN facility h ON (f.parentid = h.id)
+		INNER JOIN district d ON (f.districtid = d.id)
+		WHERE f.id NOT IN(select c.facilityid from checklogin c 
+		WHERE c.thedate >= curdate() - INTERVAL DAYOFWEEK(curdate())+6 DAY
+		AND c.thedate < curdate() - INTERVAL DAYOFWEEK(curdate())-1 DAY)
+		order by f.name';			
+		$facilities = \DB::select($query);		
+        return view('dailyrouting.notvisited', compact('facilities','title'));
+		
+	}
+	
+	public function facilitiesForHub(Request $request){
+		$hubid = $request->hubid;	
+    	//if($request->ajax()){
+			$facilities = Facility::where('parentid', $request->hubid)->pluck("name","id");
+    		$html_options = getGenerateHtmlforAjaxSelect($facilities, 'Filter by facility');
+    		return response()->json(['options'=>$html_options]);
+    	//}
+
     }
 }

@@ -36,7 +36,7 @@
         <div class="col-md-4"><img src="{{ asset('img/cdc.png') }}" class="img-responsive pull-right"></div>
     </div>
 </div>
-<div class="login-box">
+<div class="login-box" style="width:360px;">
 	
   <!-- /.login-logo -->
   <div class="login-box-body">

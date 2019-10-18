@@ -26,10 +26,10 @@ class EquipmentController extends Controller {
 		$where_condition = '';
 		$title = 'View Bike List';
 		$status = '';
-		if(Auth::user()->hasRole('In_charge')){
+		if(Auth::user()->hasRole('hub_coordinator')){
 			$where_condition = " AND e.hubid ='".Auth::user()->hubid."'";
 		}
-		$query = "SELECT e.enginenumber, e.yearofmanufacture, e.status, e.id, e.numberplate, f.name as hub FROM equipment e
+		$query = "SELECT e.enginenumber, e.breakdownid, e.yearofmanufacture, e.status, e.id, e.hubid, e.numberplate, f.hubname FROM equipment e
 		INNER JOIN facility f ON(e.hubid = f.id)
 		WHERE e.id != '' ".$where_condition."
 		ORDER BY e.numberplate ASC";
@@ -45,7 +45,7 @@ class EquipmentController extends Controller {
 		}
 		$status_query = '';
 		
-		if(Auth::user()->hasRole('In_charge')){
+		if(Auth::user()->hasRole('hub_coordinator')){
 			$equipment = Equipment::where('hubid',Auth::user()->hubid)->where('status',$status)->orderby('id', 'desc')->paginate(10);
 		}else{
 			$equipment = Equipment::orderby('id', 'desc')->where('status',$status)->paginate(10); 
@@ -56,7 +56,7 @@ class EquipmentController extends Controller {
 		
 	}
 	public function servicecont($service){
-		if(Auth::user()->hasRole('In_charge')){
+		if(Auth::user()->hasRole('hub_coordinator')){
 			$equipment = Equipment::where('hubid',Auth::user()->hubid)->where('hasservicecontract',$service)->orderby('id', 'desc')->paginate(10);
 		}else{
 			$equipment = Equipment::orderby('id', 'desc')->where('hasservicecontract',$service)->paginate(10); 
@@ -70,18 +70,14 @@ class EquipmentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-		$hubsdropdown = getAllHubs();
-		
+		$hubsdropdown = array_merge_maintain_keys(array('' =>'Select hub'),getAllHubs());
 		$lt = new LookupType();
 		$lt->name = 'YES_NO';
-		$yesnooptions = $lt->getOptionValuesAndDescription();
-		
+		$yesnooptions = $lt->getOptionValuesAndDescription();		
 		$lt->name = 'SERVICE_FREQ_UNITS';
-		$servicefreqdropdown = $lt->getOptionValuesAndDescription();
-		
+		$servicefreqdropdown = $lt->getOptionValuesAndDescription();		
 		$lt->name = 'WARRANTY_UNITS';
-		$warrantyunitsdropdown = $lt->getOptionValuesAndDescription();
-		
+		$warrantyunitsdropdown = $lt->getOptionValuesAndDescription();		
        return View('equipment.create', compact('hubsdropdown', 'yesnooptions', 'servicefreqdropdown', 'warrantyunitsdropdown'));
     }
 
@@ -99,8 +95,13 @@ class EquipmentController extends Controller {
 		//Validate all fields
          $equipment = new \App\Models\Equipment;
 		try {
-			$equipment->facilityid = $request->facilityid;
-			$equipment->hubid = $request->facilityid;
+			if(Auth::user()->hasRole('hub_coordinator')){
+				$equipment->facilityid = Auth::user()->hubid;
+				$equipment->hubid = Auth::user()->hubid;
+        	}else{
+				$equipment->facilityid = $request->facilityid;
+				$equipment->hubid = $request->facilityid;
+			}
 			$equipment->type = 1;
 			$equipment->createdby = \Auth()->user()->id;
 			$equipment->enginenumber = $request->enginenumber;
@@ -301,8 +302,7 @@ class EquipmentController extends Controller {
 		}
 	}
 	
-	public function updatebreakdownstatus(Request $request){
-		
+	public function updatebreakdownstatus(Request $request){		
 		try {
 			\DB::transaction(function() use($request){
 				$equipment = Equipment::findOrFail($request->equipmentid);

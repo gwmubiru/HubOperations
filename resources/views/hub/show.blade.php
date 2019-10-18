@@ -35,7 +35,16 @@
         <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Facilities Served ({{count($facilities)}})</a></li>
         <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Techinical Team</a></li>
         <li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="false">Routing Schedule</a></li>
-        <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+        
+        <li class="pull-right">
+                <a class="dropdown-toggle text-muted" data-toggle="dropdown" href="#" aria-expanded="false">
+                  <i class="fa fa-gear"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li role="presentation"><a role="menuitem" target="_blank" tabindex="-1" href="{{route('download.hubinfo', ['hubid' => $hub->id, 'type' => 1])}}">Download for App</a></li>
+                    
+                </ul>
+              </li>
       </ul>
       <div class="tab-content">
         <div class="tab-pane active" id="tab_1">
@@ -88,9 +97,11 @@
         @if($can_update_facility || $can_delete_facility)
         <td>
         @if($can_update_facility)<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
+        <a href="{{route('facility.printqr', $hub->id)}}" target="_blank"><i class="fa fa-fw fa-qrcode"></i> Print QR code</a>
+        
         @endif
         @if($can_delete_facility)
-        	<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
+        	&nbsp;<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
             @endif
         </td>
         @endif

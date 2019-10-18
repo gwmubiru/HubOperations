@@ -21,6 +21,14 @@ class FacilityController extends Controller {
     public function index() {
 		//$facilities = \DB::table('facility')->get();
 		//$facilities = Facility::where('id', '!=', '')->get();
+		$where_clause = '';
+		
+		if(Auth::user()->hasRole('hub_coordinator')){
+			//$staff = Staff::where('hubid',Auth::user()->hubid)->Orderby('id', 'desc')->where('type', $pagetype)->paginate(10);
+			$where_clause = " AND f.parentid = '".Auth::user()->hubid."'";
+		}else{
+        	//$staff = Staff::Orderby('id', 'desc')->where('type', $pagetype)->paginate(10);
+		}
 		$can_delete_facility = Entrust::can('delete-facility');
 		$can_update_facility = Entrust::can('Update_facility');
 
@@ -29,6 +37,7 @@ class FacilityController extends Controller {
 		INNER JOIN facility as h ON (f.parentid = h.id) 
 		INNER JOIN facilitylevel AS fl ON (f.facilitylevelid = fl.id) 
 		INNER JOIN district as d ON(f.districtid = d.id)
+		WHERE f.id<> ''".$where_clause."
 		ORDER BY f.name ASC";
 		$facilities = \DB::select($query);
 
@@ -122,7 +131,7 @@ class FacilityController extends Controller {
 		$facility = Facility::findOrFail($id);;
 		try {
 			$facility->facilitylevelid = $request->facilitylevelid;
-			$facility->parentid = $request->hubid;
+			$facility->parentid = $request->parentid;
 			$facility->ipid = $request->ipid;
 			$facility->name = $request->name;
 			$facility->districtid = $request->districtid;
@@ -151,10 +160,13 @@ class FacilityController extends Controller {
     public function destroy($id) {
 		$facility = Facility::findOrFail($id);
         $facility->delete();
-
         return redirect()->route('facility.list')
             ->with('flash_message',
-             'Orgainzation successfully deleted');
-       
+             'Orgainzation successfully deleted');       
     }
+	
+	public function printQr($id){
+		$facility = Facility::findOrFail($id);
+		return view ('facility.print', compact('facility'));
+	}
 }

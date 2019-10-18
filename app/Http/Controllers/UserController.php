@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\User;
 use Auth;
+use Hash;
 
 //Importing laravel-permission models
 use App\Models\Role;
@@ -166,4 +167,29 @@ class UserController extends Controller {
             ->with('flash_message',
              'User successfully deleted.');
     }
+	
+	public function resetpassword($userid){
+		$userid= $userid;
+		
+		return view('users.resetpassword')->with('userid',$userid);
+	}
+	public function saveresetpassword(Request $request) {
+		
+		$user = User::findOrFail($request->userid);
+		//compare the old password with existing password 
+		if(Hash::check($request->oldpassword,$user->password)) {
+			// Right password
+			$user->setPasswordAttribute($request->password);
+			$user->save();
+			return redirect()->route('users.show', array('id' => $user->id))->with('flash_message',
+             'You have successfully changed your password.');
+		} else {
+			// redirect user to reset password page
+			return redirect()->route('user.resetpassword', array('id' => $user->id))->with('flash_message',
+             'invalid old password.');
+		}
+
+
+		
+	}
 }

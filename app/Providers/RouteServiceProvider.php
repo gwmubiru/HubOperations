@@ -69,5 +69,14 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
+	   /* Route::group([
+        middleware' => ['api', 'cors'],
+        namespace' => $this->namespace,
+        prefix' => 'api',
+    ], function ($router) {
+         Add you routes here, for example:
+		 Route::get('/samples/{action}','eidrController@index');
+         Route::get('/samples/events/start_date/{start_date?}/end_date/{end_date?}','eidrController@events');
+    });*/
     }
 }

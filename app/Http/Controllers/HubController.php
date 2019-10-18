@@ -1,11 +1,7 @@
 <?php
-// app/Http/Controllers/PostController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use App\Post;
 use Auth;
 use Session;
 use \Entrust;

@@ -69,9 +69,10 @@
         <td>{{ $facility->hub }}</td>
         <td>{{ $facility->district }}</td>
         <td>{{ $facility->facilitylevel }}</td>
-        <td><a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;
+        <td>@if(Entrust::can('Update_facility'))<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;@endif
+        <a href="{{route('facility.printqr', $facility->id)}}" target="_blank"><i class="fa fa-fw fa-qrcode"></i> Print QR code</a>
         @if($can_delete_facility)
-       	<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
+       &nbsp;<a href="{{ route('facility.edit', $facility->id ) }}"><i class="fa fa-fw fa-trash-o"></i>Delete</a>
         @endif
         </td>
 

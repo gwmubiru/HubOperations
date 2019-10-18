@@ -1,27 +1,4 @@
 <?php
-
-# functions to create and manage drop down lists
-#require_once 'dropdownlists.php';
-
-
-
-/**
- * Change a date from MySQL database Format (yyyy-mm-dd) to the format displayed on pages(mm/dd/yyyy)
- * 
- * If the date from the database is NULL, it is transformed to an empty string for display on the pages 
- *
- * @param String $mysqldate The date in MySQL format 
- * @return String the date in short date format, or an empty string if no date is provided 
- */
-function changeMySQLDateToPageFormatForReports($mysqldate) {
-	$aconfig = Zend_Registry::get("config"); 
-	if (isEmptyString($mysqldate)) {
-		return $mysqldate;
-	} else {
-		return date('M d, Y', strtotime($mysqldate));
-	}
-}
-
 /**
  * Change a date from MySQL database Format (yyyy-mm-dd) to the format displayed on pages(mm/dd/yyyy)
  * 
@@ -341,8 +318,8 @@ function createHTMLListFromArray($array) {
 				$links .= '<li> <a href="'.route('equipment.create').'">New bike</a></li>';
 			}
 		}elseif(strpos($currenturl, 'staff/list/2') != false || strpos($currenturl, 'staff/new/2') != false){
-			$links .= '<li> <a href="'.url('staff/list/2').'">All staff members</a></li>';
-			$links .= '<li> <a href="'.url('staff/new/2').'">New staff member</a></li>';
+			$links .= '<li> <a href="'.url('staff/list/2').'">All sample receptionists</a></li>';
+			$links .= '<li> <a href="'.url('staff/new/2').'">New sample receptionist</a></li>';
 		}elseif(strpos($currenturl, 'staff/list/1') != false || strpos($currenturl, 'staff/new/1') != false){
 			$links .= '<li> <a href="'.url('staff/list/1').'">All sample transporters</a></li>';
 			$links .= '<li> <a href="'.url('staff/new/1').'">New transporter</a></li>';
@@ -566,7 +543,7 @@ ORDER BY f.name";
 	function generateRationInput($array_data,$field_name, $style = 'inline'){
 		$options_string = '';
 		foreach($array_data as $key =>$value){
-			$options_string .= Form::radio($field_name,  $key ).' 
+			$options_string .= Form::radio($field_name,  $key).' 
 			<span class="input-tag">'.$value.' </span>';
 		}
 		return $options_string;
@@ -589,4 +566,109 @@ ORDER BY f.name";
 		$dailyroutingdetails = \DB::select($query);
 		return $dailyroutingdetails;
 	}
+	
+	function getPackagesInTransitByType($type,$status = 1){
+		//check the kind of user logged in and return the corresponding results
+		$hubid = Auth::getUser()->hubid;
+		$andwhere = '';
+		if($hubid){
+			$andwhere = " AND p.hubid = '".$hubid."'";
+		}
+		$query = "SELECT s.id FROM samples s
+INNER JOIN package p ON(p.barcode_id = s.barcodeid)
+INNER JOIN packagemovement pm ON (pm.packageid = p.id)
+WHERE p.`type` = '".$type."' AND pm.`status` = 1 ".$andwhere;
+//echo $query;
+	$samples = \DB::select($query);
+	return count($samples);
+	
+	} 
+	
+	function getReceivedSamples($type){
+		$query = "SELECT s.id FROM samples s
+INNER JOIN package p ON(p.barcode_id = s.barcodeid)
+INNER JOIN packagemovement pm ON (pm.packageid = p.id)
+WHERE p.`type` = '".$type."' AND pm.`status` = 3";
+	$samples = \DB::select($query);
+	return count($samples);
+	} 
+	
+
+/*public function index(Request $request){
+
+$notices = DB::select('select notices.id,notices.title,notices.body,notices.created_at,notices.updated_at,
+users.name,departments.department_name
+FROM notices
+INNER JOIN users ON notices.user_id = users.id
+INNER JOIN departments on users.dpt_id = departments.id
+ORDER BY users.id DESC');
+
+$notices = $this->arrayPaginator($notices, $request);
+
+return view('welcome')->with('allNotices', $notices);
+
+}
+
+public function arrayPaginator($array, $request)
+{
+    $page = Input::get('page', 1);
+    $perPage = 10;
+    $offset = ($page * $perPage) - $perPage;
+
+    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
+        ['path' => $request->url(), 'query' => $request->query()]);
+}
+*/
+
+function packageStats($status, $packagetype){
+	$incharge_clause = '';
+	if(Auth::user()->hasRole('hub_coordinator')){
+		$incharge_clause .= " AND hubid = '".Auth::user()->hubid."'";
+	}
+	$query = "SELECT COUNT(id) as numberofsamples FROM package WHERE status = 
+	".$status." AND type = '".$packagetype."'".$incharge_clause;		
+	$samples = \DB::select($query);	
+	if(!empty($samples)) { 
+		return $samples[0]->numberofsamples;
+	 } 
+	return 0;	
+}
+
+function getWeekEndDates(){
+	$date = time(); // Change to whatever date you need
+	$dotw = $dotw = date('w', $date);
+	$start = ($dotw == 1 /* Monday */) ? $date : strtotime('last Monday', $date);
+	$end = ($dotw == 0 /* Sunday */) ? $date : strtotime('next Sunday', $date);
+	return array('start' => date('m/d/Y',$start), 'end' => date('m/d/Y',$end));
+}
+function getTAT($delivered_at, $recieved_at, $received_at_cphl_on){
+	$from_date = $delivered_at;
+	if($recieved_at != ''){
+		$from_date = $recieved_at;
+	}
+	if(trim($from_date) != '' && trim($received_at_cphl_on) != ''){
+		$from_secs = strtotime(trim($from_date));
+		$to_secs = strtotime(trim($received_at_cphl_on));
+		//return 'starttime: '.$from_date.' endtime: '.$received_at_cphl_on.' '.number_format((($to_secs - $from_secs)/(60*60)),2,'.','').' hours';
+		return time_elapsed($to_secs - $from_secs);
+	}else{
+		return '';
+	}
+}
+
+function time_elapsed($secs){
+    $bit = array(
+        'y' => $secs / 31556926 % 12,
+        'w' => $secs / 604800 % 52,
+        'd' => $secs / 86400 % 7,
+        'h' => $secs / 3600 % 24,
+        'm' => $secs / 60 % 60,
+        's' => $secs % 60
+        );
+	$ret = array();
+    foreach($bit as $k => $v)
+        if($v > 0)$ret[] = $v . $k;
+        
+    return join(' ', $ret);
+    }
 ?>

@@ -66,9 +66,11 @@
         <td>{{ count(getFacilitiesforHub($hub->id)) }}</td>
         @if($can_update_facility || $can_delete_facility)
         <td>
-        @if($can_update_facility)<a href="{{ route('hub.edit', $hub->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp; @endif
+        @if($can_update_facility)<a href="{{ route('hub.edit', $hub->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a> @endif
+        &nbsp;
+        <a href="{{route('facility.printqr', $hub->id)}}" target="_blank"><i class="fa fa-fw fa-qrcode"></i> Print QR code</a>
         @if($can_delete_facility)
-        <a href="{{ route('hub.destroy', $hub->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
+       &nbsp; <a href="{{ route('hub.destroy', $hub->id ) }}"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
         @endif</td>
         @endif
       </tr>

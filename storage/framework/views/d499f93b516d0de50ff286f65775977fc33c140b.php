@@ -65,9 +65,11 @@
         <td><?php echo e(count(getFacilitiesforHub($hub->id))); ?></td>
         <?php if($can_update_facility || $can_delete_facility): ?>
         <td>
-        <?php if($can_update_facility): ?><a href="<?php echo e(route('hub.edit', $hub->id )); ?>"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp; <?php endif; ?>
+        <?php if($can_update_facility): ?><a href="<?php echo e(route('hub.edit', $hub->id )); ?>"><i class="fa fa-fw fa-edit"></i>Update</a> <?php endif; ?>
+        &nbsp;
+        <a href="<?php echo e(route('facility.printqr', $hub->id)); ?>" target="_blank"><i class="fa fa-fw fa-qrcode"></i> Print QR code</a>
         <?php if($can_delete_facility): ?>
-        <a href="<?php echo e(route('hub.destroy', $hub->id )); ?>"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
+       &nbsp; <a href="<?php echo e(route('hub.destroy', $hub->id )); ?>"><i class=" fa fa-fw fa-trash-o"></i>Delete</a>
         <?php endif; ?></td>
         <?php endif; ?>
       </tr>

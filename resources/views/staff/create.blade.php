@@ -1,14 +1,39 @@
 @extends('layouts.app')
 @if ($pagetype == 1)
 	@section('title', 'Add New Sample Transporter')
+@elseif($pagetype == 4)
+	@section('title', 'Add New Driver')
+@elseif($pagetype == 2)
+	@section('title', 'Add New Sample Receptionist')
+@elseif($pagetype == 5)	
+	@section('title', 'Add New EOC Staff')
 @else
-	@section('title', 'Add New Sample Transporter')
 @endif
 @section('js')
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
  <script>
 	$(document).ready(function() {
-	
+	$('#permitexpirydate').datepicker({
+		   format: 'mm/dd/yyyy',
+		   autoclose: true
+		});
+		
+	$("input[name='hasdrivingpermit']").change(function(){
+		if( $(this).is(":checked") ){ // check if the radio is checked
+            var val = $(this).val(); // retrieve the value
+			//alert(val);
+			if(val == 1){
+				$('#permitexpirydate').removeClass('hidden');
+			}else{
+				$('#permitexpirydate').val('');
+				$('#permitexpirydate').addClass('hidden');
+			}
+        }	
+		
+	});
+	$("input[name='permitexpirydate']").change(function(){
+		$('#staffform').bootstrapValidator('revalidateField', 'permitexpirydate');
+	});
 	$("select[name='facilityid']").change(function(){
       var id = $(this).val();
       var token = $("input[name='_token']").val();
@@ -53,6 +78,13 @@
             validators: {
                 notEmpty: {
                     message: 'Please select the permit expiry date'
+                }
+             }
+        },
+		code: {
+            validators: {
+                notEmpty: {
+                    message: 'Please the code the user will use to login into the mobile app'
                 }
              }
         },
@@ -148,6 +180,7 @@
                   </div>
                 </div>             
                 @endrole
+                @if ($pagetype == 1)
                  <div class="form-group">
                   <label for="motorbikeid" class="col-sm-2 control-label">{{ Form::label('bikes', 'Motor Bike') }}</label>
 
@@ -156,8 +189,9 @@
                      
                   </div>
                 </div>
+                @endif
               @if ($pagetype == 2)
-              	<div class="form-group">
+              	<div class="form-group" style="display:none">
                   <label for="designation" class="col-sm-2 control-label">{{ Form::label('designation', 'Designation') }}</label>
 
                   <div class="col-sm-10">
@@ -201,6 +235,13 @@
                     {{ Form::text('telephonenumber', null, array('class' => 'form-control', 'id' => 'telephonenumber')) }}
                   </div>
                 </div>
+                <div class="form-group">
+                  <label for="logincode" class="col-sm-2 control-label">{{ Form::label('logincode', 'Mobile App Login Code') }}</label>
+
+                  <div class="col-sm-10">
+                    {{ Form::text('code', null, array('class' => 'form-control', 'id' => 'code', 'placeholder' => 'e.g., 345')) }}
+                  </div>
+                </div>
                 @if ($pagetype == 1)
                     <div class="form-group">
                       <label for="drivingpermit" class="col-sm-2 control-label">{{ Form::label('drivingpermit', 'Has Driving Permit') }}</label>
@@ -214,7 +255,7 @@
                         @endif
                       </div>
                       <div class="col-sm-3">
-                        {{ Form::text('permitexpirydate', null, array('class' => 'form-control', 'id' => 'permitexpirydate', 'placeholder' => 'Expiry Date')) }}
+                        {{ Form::text('permitexpirydate', null, array('class' => 'form-control hidden', 'id' => 'permitexpirydate', 'placeholder' => 'Expiry Date')) }}
                       </div>
                     </div>
                     <div class="form-group">
@@ -259,7 +300,9 @@
               <div class="box-footer">
                 {{Form::hidden('type', $pagetype)}}
                 <a class="btn btn-sm btn-danger" href="{{ URL::previous() }}">Cancel</a>
-                {{ Form::submit('Create Sample Transporter', array('class' => 'btn btn-sm btn-info pull-right')) }}
+               
+                {{ Form::submit('Create', array('class' => 'btn btn-sm btn-info pull-right')) }}
+                
               </div>
               <!-- /.box-footer -->
             

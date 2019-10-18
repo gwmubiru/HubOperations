@@ -3,8 +3,7 @@
 @section('js') 
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script> 
 <script>
-	$(document).ready(function() {
-		
+	$(document).ready(function() {		
 		//chec if mechanic is contacted and display details about the mechanic
 		$('#action1').click(function(){
 			if($('#action1').is(":checked")){
@@ -12,30 +11,52 @@
 			}else{
 				$('#mechan').addClass('hidden');
 			}
-		});
+		});		
 		
-		
-		$('#breakdown').bootstrapValidator({
-       
-        fields: {
-			reasonforbreakdown: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please select at least one facility'
-                        }
-                    }
-                },
-                
-			email: {          
-			validators: {
-					regexp: {
-					  regexp: '^[^@\\s]+@([^@\\s]+\\.)+[^@\\s]+$',
-					  message: 'The value is not a valid email address'
+		$('#breakdown').bootstrapValidator({  
+			icon: {
+				valid: 'glyphicon glyphicon-ok',
+				invalid: 'glyphicon glyphicon-remove',
+				validating: 'glyphicon glyphicon-refresh'
+			},     
+			fields: {
+				
+				datebrokendown: {
+						validators: {
+							notEmpty: {
+								message: 'date is required'
+							}
+						}
+					},										
+					datereported: {
+						validators: {
+							notEmpty: {
+								message: 'date is required'
+							},
+							date: {
+								message: 'The date is not valid',
+								format: 'MM/DD/YYYY'
+							},
+							callback: {
+								message: 'The report date should be the same as, or after the break down date',
+								callback: function(value, validator) {									
+									return comparedate($('#datereported').val(),$('#datebrokendown').val());
+								}
+							}
+						}
 					}
-				}
-			}
-		}//endo of validation rules
-    });// close form validation function
+			}//endo of validation rules
+		});// close form validation function
+		
+		$('.datefield1,.datefield2').on('changeDate show', function(e) {
+		   $('#breakdown').bootstrapValidator('revalidateField', 'datebrokendown');
+		 });	
+		 $('.datefield2,.datefield1').on('changeDate show', function(e) {
+			// alert($('#datebrokendown').val());
+		   $('#breakdown').bootstrapValidator('revalidateField', 'datereported');
+		 });
+		 //http://bladephp.co/remote-call-using-bootstrap-validator
+		 //http://bootstrapvalidator.votintsev.ru/settings/
 	});
 </script> 
 @append
@@ -49,21 +70,21 @@
       <label style="text-align:left; margin-left:16px; width:16%; font-weight:400;" for="datebrokendown" class="col-sm-3 control-label">{{ Form::label('datebrokendown', 'Date Broken Down') }}</label>
       <div class="col-sm-9">
         
-        <input name="datebrokendown" id="datebrokendown" class="form-control" type="text">
+        <input name="datebrokendown" id="datebrokendown" class="form-control datefield1" type="text">
       </div>
     </div>
     <div class="form-group">
       <label style="text-align:left; margin-left:16px; width:16%; font-weight:400;" for="datereported" class="col-sm-3 control-label">{{ Form::label('datereported', 'Date Reported') }}</label>
       <div class="col-sm-9">
         
-        <input name="datereported" id="datereported" class="form-control" type="text">
+        <input name="datereported" id="datereported" class="form-control datefield2" type="text">
       </div>
     </div>
   <h2 class="section">Specify reason(s) why motor bike is not functional <i>(tick all that apply)</i>:</h2>
   <ul class="horizontal-checkbox">
   @foreach($reasons_for_breakdown as $key=>$value)
       <li>
-        <input name="reasonforbreakdown[]" type="checkbox" value="{{$key}}" id="reason{{$key}}">
+        <input name="reasonforbreakdown[]" type="checkbox" value="{{$key}}" id="reason{{$key}}" class="reasonforbreakdown">
         {{$value}}</li>
   @endforeach 
   </ul>

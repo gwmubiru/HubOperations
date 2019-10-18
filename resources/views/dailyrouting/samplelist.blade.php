@@ -14,7 +14,7 @@
 		   endDate: '+0d',
 		   autoclose: true
 		});
-	} );
+	});
 	
 </script> 
 @append
@@ -61,7 +61,6 @@
     @endrole
    {{Form::select('facilityid', $facilities, old('facilityid'), ['class'=>'selectdropdown autosubmitsearchform'])}} 
    @role(['national_hub_coordinator','administrator']) 
-   {{Form::select('districtid', $districts, old('districtid'), ['class'=>'selectdropdown autosubmitsearchform'])}} 
    @endrole
     
    	<button type="submit" id="searchbutton" class="btn btn-primary">Filter <i class="glyphicon glyphicon-filter"></i></button>
@@ -124,8 +123,18 @@
       
       @foreach ($samples as $sample)
       <tr>
-        <td>{{$sample->hub}}</td>
-        <td>{{$sample->facility}}</td>
+        <td>
+        @if($sample->hub == '')
+        {{$sample->althubname}}
+        @else
+        {{$sample->hub}}
+        @endif</td>
+        <td>
+        @if($sample->hub == '')
+        {{$sample->althubname}}
+        @else
+        {{$sample->facility}}
+        @endif</td>
         <td>{{$sample->VL}}</td>
         <td>{{$sample->HIVEID}}</td>
         <td>{{$sample->Genexpert}}</td>

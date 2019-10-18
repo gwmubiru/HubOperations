@@ -33,18 +33,22 @@ class InfrastructureController extends Controller {
      */
     public function create() {
 		//get physical infrastructure qns
-		$query = "SELECT id, question, inputype WHERE category = 1 
+		
+		$query = "SELECT id, question, inputype 
 		FROM assessment
+		WHERE category = 1 
 		ORDER BY question ASC";
 		$physical_inf_qns = \DB::select($query);
 		//get BB infrastructure qns
-		$query = "SELECT id, question, inputype WHERE category = 2 
+		$query = "SELECT id, question, inputype  
 		FROM assessment 
+		WHERE category = 2
 		ORDER BY question ASC";
 		$bb_inf_qns = \DB::select($query);
 		//get ICT infrastructure qns
-		$query = "SELECT id, question, inputype WHERE category = 3 
-		FROM assessment 
+		$query = "SELECT id, question, inputype 
+		FROM assessment  
+		WHERE category = 3
 		ORDER BY question ASC";
 		$ict_inf_qns = \DB::select($query);
         return view('infrastructure.create', compact('physical_inf_qns','bb_inf_qns','ict_inf_qns'));

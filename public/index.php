@@ -1,5 +1,5 @@
 <?php
-
+//header("Access-Control-Allow-Origin: http://127.0.0.1/huboperations/public");
 /**
  * Laravel - A PHP Framework For Web Artisans
  *

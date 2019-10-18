@@ -24,7 +24,7 @@
                   <li> <a href="<?php echo url('/logout') ?>"> <i class="fa  fa-sign-out text-aqua"></i> Logout</a>
                     
                   </li>
-                  <li> <a href="#"> <i class="fa fa-user text-yellow"></i> Profile </a> </li>
+                  <li> <a href="<?php echo url('user/resetpassword',['id' => Auth::user()->id]);?>"> <i class="fa fa-user text-yellow"></i> Reset Password </a> </li>
                 </ul>
               </li>
             </ul>

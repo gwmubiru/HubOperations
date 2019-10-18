@@ -2,8 +2,13 @@
 
 @if ($staff->type == 1)
 	@section('title', 'View Sample Transporter')
+@elseif($staff->type == 2)
+	@section('title', 'View Sample Receptionist')
+@elseif($staff->type == 4)
+	@section('title', 'View Driver')
+@elseif($staff->type == 5)
+	@section('title', 'EOC Staff Member')
 @else
-	@section('title', 'View Staff Member')
 @endif
 
 @section('content')
@@ -16,10 +21,12 @@
   <div class="col-xs-12 table-responsive">
     <table class="table">
       <tbody>
+      
+      @role(['administrator','national_hub_coordinator']) 
       <tr>
-          <td>Facility</td>
-          <td>@if($staff->hubid){{ $staff->facility->name }}@endif</td>
-        </tr>
+          <td>Hub</td>
+          <td>@if($staff->hubid){{ $staff->facility->hubname }}@endif</td>
+        </tr>@endrole
         <tr>
           <td>First Name</td>
           <td>{{ $staff->firstname }}</td>
@@ -76,7 +83,16 @@
     </div>
     <div class="box-footer clearfix">  
                 <a href="{{URL::previous()}}" class="btn btn-sm btn-default pull-left">Back</a>
-                <a href="{{route('staff.edit', $staff->id)}}" class="btn btn-sm btn-warning pull-right">Update Sample Transporter</a> </div>
+                @if ($staff->type == 1)
+                <a href="{{route('staff.edit', $staff->id)}}" class="btn btn-sm btn-warning pull-right">Update Sample Transporter</a>
+                @elseif($staff->type == 2)
+                 <a href="{{route('staff.edit', $staff->id)}}" class="btn btn-sm btn-warning pull-right">Update Sample Receptionist</a>
+                @elseif($staff->type == 4)
+                 <a href="{{route('staff.edit', $staff->id)}}" class="btn btn-sm btn-warning pull-right">Update Driver</a>
+                @elseif($staff->type == 5)
+                <a href="{{route('staff.edit', $staff->id)}}" class="btn btn-sm btn-warning pull-right">Update EOF Staff</a>
+                @else
+                @endif </div>
   </div>
 </div>
 @endsection 

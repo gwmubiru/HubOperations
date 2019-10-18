@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Facility')
+@section('title', 'Update Facility')
 @section('js')
 <script src="{{ asset('js/bootstrapValidator.min-0.5.1.js') }}"></script>
  <script>
@@ -84,14 +84,14 @@
                   <label for="name" class="col-sm-2 control-label">{{ Form::label('name', 'Name') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::text('facility', $facility->facility, array('class' => 'form-control', 'id' => 'name')) }}
+                    {{ Form::text('name', $facility->name, array('class' => 'form-control', 'id' => 'name')) }}
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="healthregionid" class="col-sm-2 control-label">{{ Form::label('hubid', 'Hub') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('hubID', $hubsdropdown, $facility->hubID, ['class' => 'form-control']) }}
+                    {{ Form::select('parentid', $hubsdropdown, $facility->parentid, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -99,7 +99,7 @@
                   <label for="facilitylevelid" class="col-sm-2 control-label">{{ Form::label('facilitylevelid', 'Level') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('facilityLevelID', $facilityleveldropdown, $facility->facilityLevelID, ['class' => 'form-control']) }}
+                    {{ Form::select('facilitylevelid', $facilityleveldropdown, $facility->facilitylevelid, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>
@@ -107,7 +107,7 @@
                   <label for="districtid" class="col-sm-2 control-label">{{ Form::label('districtID', 'District') }}</label>
 
                   <div class="col-sm-10">
-                    {{ Form::select('districtID', $districtdropdown, $facility->districtID, ['class' => 'form-control']) }}
+                    {{ Form::select('districtid', $districtdropdown, $facility->districtid, ['class' => 'form-control']) }}
                      
                   </div>
                 </div>

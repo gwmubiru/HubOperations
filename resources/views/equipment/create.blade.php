@@ -95,14 +95,14 @@
     		{{ Form::open(array('route' => 'equipment.store', 'class' => 'form-horizontal', 'id' => 'equipmentform')) }}
             {{ csrf_field() }}
               <div class="box-body create">
+              @role(['administrator','national_hub_coordinator']) 
               <div class="form-group">
                   <label for="facility" class="col-sm-3 control-label">{{ Form::label('facility', 'Hub') }}</label>
-
                   <div class="col-sm-9">
-                    {{ Form::select('facilityid', $hubsdropdown, null, ['class' => 'form-control']) }}
-                     
+                    {{ Form::select('facilityid', $hubsdropdown, null, ['class' => 'form-control']) }}                     
                   </div>
                 </div>
+                @endrole
                 <div class="form-group">
                   <label for="enginenumber" class="col-sm-3 control-label">{{ Form::label('enginenumber', 'Engine Number') }}</label>
 

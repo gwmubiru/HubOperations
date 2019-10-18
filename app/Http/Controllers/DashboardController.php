@@ -20,24 +20,52 @@ class DashboardController extends Controller {
      */
 
     public function index() {
+		if(Auth::user()->hasRole('eoc_admin')){
+			//exit('ad');
+			return redirect('staff/list/5');
+		}
+		$where_condition = '';
+		if(Auth::user()->hasRole('hub_coordinator')){
+            $where_condition .= " AND e.hubid ='".Auth::user()->hubid."'";
+        }
+		$where_condition .= " AND e.status = 2";		
+		$query = "SELECT e.id, lv.lookupvaluedescription as name, e.model, e.serial_number, e.status, e.location, f.hubname, e.installation_date FROM facilitylabequipment e
+        INNER JOIN facility f ON(e.hubid = f.id)
+		INNER JOIN lookuptypevalue lv ON (lv.lookuptypevalue = e.labequipment_id AND lv.lookuptypeid = 27)
+        WHERE e.id != '' ".$where_condition."
+        ORDER BY lv.lookupvaluedescription  ASC";
+		//echo $query; exit;
+        $lab_equipment_broken_down = \DB::select($query);
+		
 		$where_clause = '';
+		$facilities_not_visited_cond = '';
 		if(Auth::user()->hasRole('hub_coordinator')){
 			$where_clause .= "AND s.hubid = '".Auth::user()->hubid."'";
-			$equipment_brokendown = Equipment::where('hubid',Auth::user()->hubid)->where('status',2)->orderby('id', 'desc')->paginate(10);
+			$facilities_not_visited_cond = "AND f.parentid = '".Auth::user()->hubid."'";
+			$equipment_broken_down = Equipment::where('hubid',Auth::user()->hubid)->where('status',2)->orderby('id', 'desc')->paginate(10);
 			$equipment_no_service = Equipment::where('hubid',Auth::user()->hubid)->where('hasservicecontract',0)->orderby('id', 'desc')->paginate(10);					
 			//return redirect()->route('dashboard.coordinator');
-		}
+		}else{
 			$equipment_broken_down = Equipment::orderby('id', 'desc')->where('status',2)->paginate(10); 
 			$equipment_no_service = Equipment::orderby('id', 'desc')->where('hasservicecontract',0)->paginate(10); 
+		}
 			
+			//facilities not visited last week
+			$query = 'select f.id, f.name, h.hubname from 
+			facility f
+			INNER JOIN facility h ON (f.parentid = h.id '.$facilities_not_visited_cond.')
+			WHERE f.id NOT IN(select c.facilityid from checklogin c 
+			WHERE c.thedate >= curdate() - INTERVAL DAYOFWEEK(curdate())+6 DAY
+			AND c.thedate < curdate() - INTERVAL DAYOFWEEK(curdate())-1 DAY)
+			order by f.name';			
+			$facilities_not_visited = \DB::select($query);
 			
-			
-			// get the samples for this month
+			// get the samples for this week
 			$query = "SELECT lv.lookupvaluedescription as sampletype, SUM(s.numberofsamples) AS samples
 	FROM samples s 
 	INNER JOIN lookuptypevalue lv ON(lv.lookuptypevalue = s.samplecategory)
 	INNER JOIN lookuptype l ON(l.id = lv.lookuptypeid)
-	WHERE lv.lookuptypeid = 18 AND MONTH(thedate) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) ".$where_clause."
+	WHERE lv.lookuptypeid = 18 AND YEARWEEK(`thedate`) = YEARWEEK(CURDATE()) ".$where_clause."
 	GROUP BY lv.lookupvaluedescription ASC";
 	
 		   $samples = \DB::select($query);
@@ -52,7 +80,7 @@ class DashboardController extends Controller {
 			}
 			//$chart = lava::LineChart('samples', $stocksTable);			
 			lava::ColumnChart('samples', $samplestable, [
-				'title' => ' Samples this last month',
+				'title' => ' Samples this week',
 				'titleTextStyle' => [
 					'color'    => '#eb6b2c',
 					'fontSize' => 14
@@ -60,33 +88,31 @@ class DashboardController extends Controller {
 			]);
 			
 			// Random Data For Example
-			$query = "SELECT lv.lookupvaluedescription as resulttype, SUM(s.numberofresults) AS results
+			$query = "SELECT count(s.id) AS results
 	FROM results s 
-	INNER JOIN lookuptypevalue lv ON(lv.lookuptypevalue = s.samplecategory)
-	INNER JOIN lookuptype l ON(l.id = lv.lookuptypeid)
-	WHERE lv.lookuptypeid = 18 AND MONTH(thedate) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) ".$where_clause."
-	GROUP BY lv.lookupvaluedescription ASC";
+	WHERE delivered_at >= curdate() - INTERVAL DAYOFWEEK(curdate())+6 DAY ".$where_clause."
+	GROUP BY s.id ASC";
 		   $results = \DB::select($query);		
 			
 	$resultstable = lava::DataTable();
-	$resultstable->addStringColumn('Result Type')
-				->addNumberColumn('Number of results');
+	$resultstable->addNumberColumn('Number of results');
 			 foreach($results as $line){
 				$resultstable->addRow([
-				  $line->resulttype, $line->results
+				  $line->results
 				]);
 			}
 	
 	lava::ColumnChart('theresults', $resultstable, [
-		'title' => 'Results last month',
+		'title' => 'Results this week',
 		'titleTextStyle' => [
 			'color'    => '#eb6b2c',
 			'fontSize' => 14
 		]
 	]);
 	
-		
-			return view('dashboard.index', compact('equipment_broken_down', 'equipment_no_service','samples','results'));
+		//print_r(count($equipment_brokendown));
+		//exit;
+		return view('dashboard.index', compact('equipment_broken_down', 'equipment_no_service','samples','results', 'facilities_not_visited', 'lab_equipment_broken_down'));
     }
 	
 	public function coordinator(){
@@ -136,9 +162,7 @@ GROUP BY lv.lookupvaluedescription ASC";
 		}
 		//print_r($resultstable);
 		//exit;
-		$resultchart = lava::LineChart('theresults', $resultstable);
-	
-	
+		$resultchart = lava::LineChart('theresults', $resultstable);	
 		return View('dashboard.coordinator', compact('samples','results'));
 	}
 

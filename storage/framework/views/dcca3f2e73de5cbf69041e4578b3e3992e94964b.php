@@ -1,7 +1,12 @@
 <?php if($staff->type == 1): ?>
 	<?php $__env->startSection('title', 'View Sample Transporter'); ?>
+<?php elseif($staff->type == 2): ?>
+	<?php $__env->startSection('title', 'View Sample Receptionist'); ?>
+<?php elseif($staff->type == 4): ?>
+	<?php $__env->startSection('title', 'View Driver'); ?>
+<?php elseif($staff->type == 5): ?>
+	<?php $__env->startSection('title', 'EOC Staff Member'); ?>
 <?php else: ?>
-	<?php $__env->startSection('title', 'View Staff Member'); ?>
 <?php endif; ?>
 
 <?php $__env->startSection('content'); ?>
@@ -14,10 +19,12 @@
   <div class="col-xs-12 table-responsive">
     <table class="table">
       <tbody>
+      
+      <?php if (\Entrust::hasRole(['administrator','national_hub_coordinator'])) : ?> 
       <tr>
-          <td>Facility</td>
-          <td><?php if($staff->hubid): ?><?php echo e($staff->facility->name); ?><?php endif; ?></td>
-        </tr>
+          <td>Hub</td>
+          <td><?php if($staff->hubid): ?><?php echo e($staff->facility->hubname); ?><?php endif; ?></td>
+        </tr><?php endif; // Entrust::hasRole ?>
         <tr>
           <td>First Name</td>
           <td><?php echo e($staff->firstname); ?></td>
@@ -79,7 +86,16 @@
     </div>
     <div class="box-footer clearfix">  
                 <a href="<?php echo e(URL::previous()); ?>" class="btn btn-sm btn-default pull-left">Back</a>
-                <a href="<?php echo e(route('staff.edit', $staff->id)); ?>" class="btn btn-sm btn-warning pull-right">Update Sample Transporter</a> </div>
+                <?php if($staff->type == 1): ?>
+                <a href="<?php echo e(route('staff.edit', $staff->id)); ?>" class="btn btn-sm btn-warning pull-right">Update Sample Transporter</a>
+                <?php elseif($staff->type == 2): ?>
+                 <a href="<?php echo e(route('staff.edit', $staff->id)); ?>" class="btn btn-sm btn-warning pull-right">Update Sample Receptionist</a>
+                <?php elseif($staff->type == 4): ?>
+                 <a href="<?php echo e(route('staff.edit', $staff->id)); ?>" class="btn btn-sm btn-warning pull-right">Update Driver</a>
+                <?php elseif($staff->type == 5): ?>
+                <a href="<?php echo e(route('staff.edit', $staff->id)); ?>" class="btn btn-sm btn-warning pull-right">Update EOF Staff</a>
+                <?php else: ?>
+                <?php endif; ?> </div>
   </div>
 </div>
 <?php $__env->stopSection(); ?> 
