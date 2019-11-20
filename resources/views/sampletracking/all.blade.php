@@ -44,7 +44,55 @@
 			var sampleid = $(this).attr('id');
 			$('#samplemodal_' + sampleid).modal('show');
 		});
-				
+			
+    var table = $('#listtable').DataTable();
+    $('#listtable').on('search.dt', function() {
+        var value = $('.dataTables_filter input').val();
+        //console.log(value); // <-- the value
+    }); 
+
+    $('.dataTables_filter input').unbind().keyup(function() {
+        var value = $(this).val();
+        //only start to search if string is at least 12 characters
+        if (value.length>12) {
+            table.search(value).draw();
+            var info = table.page.info();
+            //var rowstot = info.recordsTotal;
+            //alert("rowstot: " + rowstot);
+            var rowsshown = info.recordsDisplay;
+          if(rowsshown == 0){
+            //use record details of the unscanned barcode
+            //alert('no results');
+            $('#barcode').val(value);
+            $('#no_barcode').modal('show');
+          }
+        } 
+
+        if (value.length==0) table.search('').draw();
+
+    });
+
+    //on selecting a hub, get the facilities it serves
+    $("select[name='hubid']").change(function(){
+      var hubid = $(this).val();
+      var hiddenvalue = $("input[name='_token']").val();
+      
+      $.ajax({
+        url: "<?php echo url('dailyrouting/facilitiesforhub'); ?>",
+        method: 'POST',
+        data: {hubid:hubid, _token:hiddenvalue},
+        success: function(data) {
+            $("select[name='facilityid'").empty();
+          $("select[name='facilityid'").html(data.options);
+          }
+        });
+      });
+
+      $('.rec_sample').click(function(event){
+          event.preventDefault();
+          $('#no_samples #the_id').val(event.target.id);
+          $('#no_samples').modal('show');
+      });	
 	} );
 	
 </script> 
@@ -128,9 +176,8 @@
           <th>Received at CPHL</th>
           <th>Hub TAT</th>
           <th>CPHL TAT</th>
-          @role(['hub_coordinator'])
           <th>Action</th>
-          @endrole
+          
         </tr>
       </thead>
       <tbody>      
@@ -162,14 +209,20 @@
         <td>{{getTAT('', $sample->taken_at,$sample->delivered_at)}}</td>
         <td>{{getTAT($sample->delivered_at,$sample->recieved_at, $sample->received_at_cphl_on)}}</td>
         
-        @role(['hub_coordinator'])
-        <td>       
-        @if($sample->status == 2 && Auth::user()->hubid = $sample->destinationfacility)   
-             
-        @endif
         
-        </td>
+        <td>     
+        @role(['hub_coordinator'])  
+        @if($sample->status == 2 && Auth::user()->hubid = $sample->destinationfacility)        
+        @endif
         @endrole
+
+        @role(['cphl_sample_reception'])
+       @if($sample->status < 7)
+        <a href="{{ route('sampletracking.receivesample',$sample->id) }}" id="{{$sample->id}}" class="rec_sample">Receive</a>
+       @endif
+        @endrole
+        </td>
+        
       </tr>
       @endforeach
         </tbody>      
@@ -177,4 +230,94 @@
   </div>
   <!-- /.box-body --> 
 </div>
+
+
+<!-- The Modal - no barcode-->
+<div>
+<div class="modal" id="no_barcode">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Barcode not Scanned</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+
+      <div class="modal-body">
+        <p>The barcode was not scanned so, record its details here for follow-up</p>
+        {{ Form::open(array('route' => 'samples.saveunscannedbarcode', 'class' => '', 'id' => 'unscanned')) }}
+            {{ csrf_field() }}
+            <div class="form-group">
+              <label for="hub" class="control-label">Hub</label>
+              <div>
+                {{Form::select('hubid', $hubs, old('hubid'), ['class'=>'form-control input-lg'])}}                     
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="hub" class="control-label">Facility</label>
+              <div>
+                {{Form::select('facilityid', $facilities, old('facilityid'), ['class'=>'form-control input-lg'])}}                     
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="insurance" class="control-label">Barcode</label>
+
+              <div>
+                {{ Form::text('barcode', old('barcode'), array('class' => 'form-control', 'id' => 'barcode')) }}
+              </div>
+            </div>
+            <div class="form-group">
+                <div>
+                  {{ Form::hidden('type', 1) }}
+                    <button type="submit" id="submit_form" class="btn btn-primary">Submit </button>
+                    </button>
+                </div>
+            </div>
+            {{ Form::close() }}
+      </div>
+
+   </div>
+</div>
+</div>
+<!-- End The Modal - no barcode-->
+<!-- The Modal - enter number of samples-->
+<div class="modal" id="no_samples">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Number of samples</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+
+      <div class="modal-body">
+        {{ Form::open(array('route' => 'samples.receivesmallpackage', 'class' => '', 'id' => 'no_s')) }}
+            {{ csrf_field() }}
+          <div class="form-group">
+              <label for="insurance" class="control-label">Barcode</label>
+
+              <div>
+                {{ Form::text('numberofsamples', old('numberofsamples'), array('class' => 'form-control', 'id' => 'number_of_samples')) }}
+              </div>
+            </div>
+            <div class="form-group">
+                <div>
+                  <input type="text" name="id" value="" class="hidden" id="the_id">
+                    <button type="submit" id="submit_form" class="btn btn-primary">Submit </button>
+                    </button>
+                </div>
+            </div>
+            {{ Form::close() }}
+      </div>
+
+   </div>
+</div>
+<!-- end The Modal - enter number of samples-->
+
 @endsection

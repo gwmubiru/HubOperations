@@ -28,7 +28,14 @@ class DashboardController extends Controller {
 		if(Auth::user()->hasRole('hub_coordinator')){
             $where_condition .= " AND e.hubid ='".Auth::user()->hubid."'";
         }
+        if(Auth::user()->hasRole('implementing_partner')){
+        	$ips_facilities = getFacilitiesForIP(Auth::user()->organisation_id);
+        	if(count($ips_facilities)){
+        		$where_condition .= " AND e.hubid in (".$ips_facilities.")";
+        	}
+    	}
 		$where_condition .= " AND e.status = 2";		
+
 		$query = "SELECT e.id, lv.lookupvaluedescription as name, e.model, e.serial_number, e.status, e.location, f.hubname, e.installation_date FROM facilitylabequipment e
         INNER JOIN facility f ON(e.hubid = f.id)
 		INNER JOIN lookuptypevalue lv ON (lv.lookuptypevalue = e.labequipment_id AND lv.lookuptypeid = 27)

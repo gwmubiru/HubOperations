@@ -28,6 +28,17 @@
 				$('#hr').addClass('hidden');
 			}
 		});
+        //display ips, if user is ip
+        $('#role11').click(function(){
+            if($(this).is(':checked')){
+                $('#ips').removeClass('hidden');
+            }else{
+                if ($('#organisation_id').val() !== '') {
+                    $('#organisation_id').val('');    
+                } 
+                $('#ips').addClass('hidden');
+            }
+        });
 	
 		$('#userform').bootstrapValidator({
        
@@ -135,6 +146,11 @@
         {{ Form::label('healthregionid', 'Health Region') }}
         {{ Form::select('healthregionid', $healthregions, null, ['class' => 'form-control']) }}
     </div>
+    <div class="form-group hidden" id="ips">
+        {{ Form::label('organization', 'IP') }}
+        {{ Form::select('organisation_id', $ips, null, ['class' => 'form-control']) }}
+    </div>
+    
     <div class="form-group">
         {{ Form::label('password', 'Password') }}<br>
         {{ Form::password('password', array('class' => 'form-control')) }}

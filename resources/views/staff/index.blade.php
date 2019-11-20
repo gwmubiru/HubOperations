@@ -60,10 +60,10 @@
         <td>{{ $st->designation }}</td>
         @endif
         @if($pagetype == 1)
-        <td>{{ getLookupValueDescription('YES_NO', $st->hasdrivingpermit) }}</td>
-        <td>{{ getLookupValueDescription('YES_NO', $st->hasdefensiveriding) }}</td>
-        <td>{{ getLookupValueDescription('YES_NO', $st->hasbbtraining) }}</td>
-        <td>{{ getLookupValueDescription('YES_NO', $st->isimmunizedforhb) }}</td>
+        <td>@if($st->hasdrivingpermit){{ getLookupValueDescription('YES_NO', $st->hasdrivingpermit) }} @endif</td>
+        <td>@if($st->hasdefensiveriding){{ getLookupValueDescription('YES_NO', $st->hasdefensiveriding) }} @endif</td>
+        <td>@if($st->hasbbtraining){{ getLookupValueDescription('YES_NO', $st->hasbbtraining) }} @endif</td>
+        <td>@if($st->isimmunizedforhb){{ getLookupValueDescription('YES_NO', $st->isimmunizedforhb) }} @endif</td>
         @endif
 
         <td><a href="{{ route('staff.edit', $st->id ) }}"><i class="fa fa-fw fa-edit"></i>Update</a>&nbsp;

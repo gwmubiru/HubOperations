@@ -32,8 +32,62 @@
 						}
 					},
 					'colvis'
-				]
+				],
+        "language": {
+            //"zeroRecords": function(){alert('asdfs')},
+                     
+        }
 			} );
+    var table = $('#listtable').DataTable();
+    $('#listtable').on('search.dt', function() {
+        var value = $('.dataTables_filter input').val();
+        //console.log(value); // <-- the value
+    }); 
+
+    $('.dataTables_filter input').unbind().keyup(function() {
+        var value = $(this).val();
+        //only start to search if string is at least 12 characters
+        if (value.length>12) {
+            table.search(value).draw();
+            var info = table.page.info();
+            //var rowstot = info.recordsTotal;
+            //alert("rowstot: " + rowstot);
+            var rowsshown = info.recordsDisplay;
+          if(rowsshown == 0){
+            //use record details of the unscanned barcode
+            //alert('no results');
+            $('#barcode').val(value);
+            $('#no_barcode').modal('show');
+          }
+        } 
+
+        if (value.length==0) table.search('').draw();
+
+    });
+
+    //on selecting a hub, get the facilities it serves
+    $("select[name='hubid']").change(function(){
+      var hubid = $(this).val();
+      var hiddenvalue = $("input[name='_token']").val();
+      
+      $.ajax({
+        url: "<?php echo url('dailyrouting/facilitiesforhub'); ?>",
+        method: 'POST',
+        data: {hubid:hubid, _token:hiddenvalue},
+        success: function(data) {
+            $("select[name='facilityid'").empty();
+          $("select[name='facilityid'").html(data.options);
+          }
+        });
+      });
+
+    //var totalRecords =$("#listtable").DataTable().page.info().recordsTotal;
+    //test if dataTable is empty
+    //(totalRecords === 0)? alert("table is empty") : alert("table is not empty");
+    //var table = $('#listtable').DataTable();
+    //var info = table.page.info();
+    //alert(info.);
+
 		$('.filter-date').datepicker({
 		   format: 'mm/dd/yyyy',
 		   endDate: '+0d',
@@ -154,5 +208,54 @@
     </table>
   </div>
   <!-- /.box-body --> 
+</div>
+
+
+<!-- The Modal -->
+<div class="modal" id="no_barcode">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Barcode not Scanned</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+
+      <div class="modal-body">
+        <p>The barcode was not scanned so, record its details here for follow-up</p>
+        {{ Form::open(array('route' => 'samples.saveunscannedbarcode', 'class' => '', 'id' => 'unscanned')) }}
+            {{ csrf_field() }}
+            <div class="form-group">
+              <label for="hub" class="control-label">Hub</label>
+              <div>
+                {{Form::select('hubid', $hubs, old('hubid'), ['class'=>'form-control input-lg'])}}                     
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="insurance" class="control-label">Barcode</label>
+
+              <div>
+                {{ Form::text('barcode', old('barcode'), array('class' => 'form-control', 'id' => 'barcode')) }}
+              </div>
+            </div>
+            <div class="form-group">
+                <div>
+                  {{ Form::hidden('type', 2) }}
+                    <button type="submit" id="submit_form" class="btn btn-primary">Submit </button>
+                    </button>
+                </div>
+            </div>
+            {{ Form::close() }}
+      </div>
+      <div class="form-group">
+        <label for="hub" class="col-sm-3 control-label"></label>
+        <div class="col-sm-9">
+          
+        </div>
+    </div>
+  </div>
 </div>
 @endsection

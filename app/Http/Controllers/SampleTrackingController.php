@@ -173,14 +173,16 @@ group by p.id, p.barcode, s.numberofsamples, sf.name,  pm.delivered_at, pm.taken
 	}
 	
 	public function receiveRample($id){
-		//$sample = Sample::findOrFail($id);
-		//$sample->status = 2;
-		//$sample->save();
-		//get all packages 
 		$packages = \DB::select('SELECT p.barcode, p.id, p.status FROM packagedetail pd  
 				INNER JOIN package p ON (pd.small_barcodeid = p.id)
-				WHERE pd.big_barcodeid ='.$id);
-		return view('sampletracking.receive',compact('packages','id'));
+				WHERE pd.big_barcodeid ='.$id.' GROUP BY p.id');
+		if(count($packages)){
+			return view('sampletracking.receive',compact('packages','id'));
+		}else{
+			//save the untracked barcode and redirect to receive individual packages
+			return redirect()->route('samples.all');
+		}
+		
 	}
 	
 	public function cphl(Request $request){
@@ -304,11 +306,10 @@ group by p.barcode,df.hubname,pm.status,sp.numberofenvelopes,p.created_at,pm.rec
 	public function processReceipt($packageid, $packagemovementid){
 		echo $packageid.' pm ';
 		echo $packagemovementid;
-		
-		$query = "select small_barcodeid from packagedetail where big_barcodeid = 2701";
-		$samples = \DB::select($query);
-		print_r($samples);
 		exit;
+		$query = "select small_barcodeid from packagedetail where big_barcodeid = '".$packageid."'";
+		$samples = \DB::select($query);
+		
 		return View('sampletracking.create', compact('packageid', 'packagemovementid'));
 	}
 	

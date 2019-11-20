@@ -41,8 +41,18 @@ class DailyRoutingController extends Controller {
 				$incharge_clause .= " AND s.hubid = '".Auth::user()->hubid."'";
 				$facilities = array_merge_maintain_keys(array(''=>'Select a facility'),getFacilitiesforHub(Auth::user()->hubid));
 			}
+
 			$graph_title = 'Samples last month';
 			$where_clause = '';
+			if(Auth::user()->hasRole('hub_coordinator')){
+	            $where_condition .= " AND e.hubid ='".Auth::user()->hubid."'";
+	        }
+	        if(Auth::user()->hasRole('implementing_partner')){
+	        	$ips_facilities = getFacilitiesForIP(Auth::user()->organisation_id);
+	        	if(count($ips_facilities)){
+	        		$where_condition .= " AND e.hubid in (".$ips_facilities.")";
+	        	}
+	    	}
 			//$where = 'WHERE MONTH(thedate) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)';
 			$where = 'WHERE YEARWEEK(`thedate`) = YEARWEEK(CURDATE())';
 			$filters = $request->all();

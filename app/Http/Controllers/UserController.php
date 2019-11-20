@@ -42,8 +42,9 @@ class UserController extends Controller {
         $roles = Role::get();
 		//get all hubs
 		$hubs = getAllHubs();
+        $ips = getAllIps();
 		$healthregions = getAllHealthRgions();
-        return view('users.create', ['roles'=>$roles, 'hubs'=>$hubs, 'healthregions' => $healthregions]);
+        return view('users.create', ['roles'=>$roles, 'hubs'=>$hubs, 'ips'=>$ips, 'healthregions' => $healthregions]);
     }
 
     /**
@@ -65,6 +66,7 @@ class UserController extends Controller {
 				$user->name = $request->name;
 				$user->setPasswordAttribute($request->password);
 				$user->hubid = $request->hubid;
+                $user->organisation_id = $request->organisation_id;
 				$user->healthregionid = $request->healthregionid;
 				$user->username = $request->username;
 				$user->save();
@@ -100,8 +102,9 @@ class UserController extends Controller {
         $user = User::findOrFail($id); //Get user with specified id
         $roles = Role::get(); //Get all roles
 		$hubs = getAllHubs();
+        $ips = getAllIps();
 		$healthregions = getAllHealthRgions();
-        return view('users.edit', compact('user', 'roles','hubs','healthregions')); //pass user and roles data to view
+        return view('users.edit', compact('user', 'roles','hubs','healthregions','ips')); //pass user and roles data to view
 
     }
 
@@ -131,6 +134,10 @@ class UserController extends Controller {
 		if(!empty($request->hubid)){
 			$user->hubid = $request->hubid;
 		}
+        if(!empty($request->hubid)){
+            $user->organisation_id = $request->organisation_id;
+        }
+        
 		if(!empty($request->healthregionid)){
 			$user->healthregionid = $request->healthregionid;
 		}

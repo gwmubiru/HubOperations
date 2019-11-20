@@ -71,7 +71,7 @@
           </ul>
           
         </li>@endrole
-        @if(Entrust::can(['Update_facility','create_facility','View_facility']))
+        @if(Entrust::can(['update_facility','create_facility','View_facility']))
         <li class="treeview">
           <a href="#"><i class="fa  fa-plus"></i> <span>Manage Facilities</span>
             <span class="pull-right-container">
@@ -81,14 +81,14 @@
           
           <ul class="treeview-menu">
            	<li><a href="{{ route('facility.index') }}">View All Facilities</a></li>
-            @if(Entrust::can('Update_facility'))
+            @if(Entrust::can('update_facility'))
             <li><a href="{{ route('facility.create') }}">Add Facility</a></li>
             @endif
           </ul>
           
         </li>
         @endif
-        @role(['hub_coordinator','administrator','national_hub_coordinator'])  
+        @role(['hub_coordinator','administrator','hub_coordinator'])  
         <li class="treeview">
           <a href="#"><i class="fa fa-motorcycle"></i> <span>Manage Routing</span>
             <span class="pull-right-container">
@@ -97,7 +97,7 @@
           </a>
           <ul class="treeview-menu">
             @if (!Auth::guest())
-                @role(['hub_coordinator','administrator','national_hub_coordinator'])  
+                @role(['hub_coordinator','administrator','hub_coordinator'])  
                 	<li><a href="{{ route('equipment.create') }}">Add New Bike</a></li>
                 @endrole
                 	<li><a href="{{ route('equipment.index') }}">View All Bikes</a></li>

@@ -209,6 +209,14 @@ Route::group(['middleware' => 'auth'], function()
         "as"   => "notification.facilitiesnotvisited",
         "uses" => "NotificationsController@facilitiesNotVisited"
     ));
+    Route::post("/samples/saveunscannedbarcode", array(
+        "as"   => "samples.saveunscannedbarcode",
+        "uses" => "SamplesController@saveunscannedbarcode"
+    ));
+    Route::post("/samples/receivesmallpackage", array(
+        "as"   => "samples.receivesmallpackage",
+        "uses" => "SamplesController@receiveSmallPackage"
+    ));
 });
 Route::get('/settings', 'SettingsController@index')->name('settings');
 Route::resource('signup', 'SignupController');

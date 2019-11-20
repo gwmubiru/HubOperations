@@ -391,6 +391,7 @@ function createHTMLListFromArray($array) {
 		INNER JOIN ips i ON (ipf.ipID = i.id)
 		INNER JOIN facilitylevel AS fl ON (f.facilitylevelid = fl.id) 
 		INNER JOIN district as d ON(f.districtid = d.id)
+		WHERE f.parentid IS NULL
 		ORDER BY f.name ASC";
 		$facilities = \DB::select($query);
 		return $facilities;
