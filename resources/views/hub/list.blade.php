@@ -60,7 +60,7 @@
       @foreach ($hubs as $hub)
       <tr>
         <td><a href="{{ route('hub.show', $hub->id ) }}">{{ $hub->hubname }}</a></td>
-        <td>{{getIpsForFacility($hub->id)}}</td>
+        <td>{{$hub->ip}}</td>
         <td>{{ $hub->healthregion }}</td>
         <td>{{ $hub->district }}</td>
         <td>{{ count(getFacilitiesforHub($hub->id)) }}</td>

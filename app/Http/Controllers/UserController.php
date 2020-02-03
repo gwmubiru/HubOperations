@@ -41,9 +41,10 @@ class UserController extends Controller {
     	//Get all roles and pass it to the view
         $roles = Role::get();
 		//get all hubs
-		$hubs = getAllHubs();
-        $ips = getAllIps();
-		$healthregions = getAllHealthRgions();
+		$hubs = array_merge_maintain_keys(array(''=>'Select One'),getAllHubs());
+        $hubs = array_merge_maintain_keys(array(''=>'Select One'),getAllHubs());
+        $ips = array_merge_maintain_keys(array(''=>'Select One'),getAllIps());
+        $healthregions = array_merge_maintain_keys(array(''=>'Select One'),getAllHealthRgions());
         return view('users.create', ['roles'=>$roles, 'hubs'=>$hubs, 'ips'=>$ips, 'healthregions' => $healthregions]);
     }
 
@@ -101,9 +102,9 @@ class UserController extends Controller {
     public function edit($id) {
         $user = User::findOrFail($id); //Get user with specified id
         $roles = Role::get(); //Get all roles
-		$hubs = getAllHubs();
-        $ips = getAllIps();
-		$healthregions = getAllHealthRgions();
+        $hubs = array_merge_maintain_keys(array(''=>'Select One'),getAllHubs());
+        $ips = array_merge_maintain_keys(array(''=>'Select One'),getAllIps());
+		$healthregions = array_merge_maintain_keys(array(''=>'Select One'),getAllHealthRgions());
         return view('users.edit', compact('user', 'roles','hubs','healthregions','ips')); //pass user and roles data to view
 
     }
@@ -128,6 +129,7 @@ class UserController extends Controller {
         $roles = $request['roles']; //Retreive all roles
 		$user->email = $request->email;
 		$user->name = $request->name;
+        $user->username = $request->username;
 		if(!empty($request->password)){
 			$user->setPasswordAttribute($request->password);
 		}

@@ -139,6 +139,7 @@ class SampleTrackingController extends Controller {
 			$where_clause = '';
 			$where = 'WHERE p.created_at > DATE_SUB(NOW(), INTERVAL 1 WEEK)';
 			$filters = $request->all();
+			
 			if(!empty($filters)){
 				if($filters['from'] != '' && $filters['to'] != ''){
 					$where = "WHERE p.created_at BETWEEN '".getMysqlDateFormat($filters['from'])."'  AND '".getMysqlDateFormat($filters['to'])."'";
@@ -153,6 +154,7 @@ class SampleTrackingController extends Controller {
 				if(array_key_exists('status',$filters) && $filters['status']){
 					$where_clause .= ' AND p.status = '.$filters['status'];
 				}
+				
 			}
 			$query = "SELECT p.id, lv.lookupvaluedescription as sampletype, p.barcode, s.numberofsamples, sf.name as sourcefacility,  pm.taken_at, pm.delivered_at, pm.recieved_at, pdpm.recieved_at AS received_at_cphl_on, df.hubname as destinationfacility, p.created_at as thedate, p.status FROM package p
 LEFT JOIN packagemovement pm ON (p.id = pm.packageid) 

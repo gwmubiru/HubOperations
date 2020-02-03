@@ -126,6 +126,7 @@ class SamplesController extends Controller {
 
 		//mark package as received at CPHL
 		$small_package->status = 7;
+		$small_package->received_at_destination_on = date('Y-m-d H:m:s');
 		$small_package->save();
 		return redirect()->route('samples.all');
 	}

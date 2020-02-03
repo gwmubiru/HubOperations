@@ -39,7 +39,7 @@
 		   endDate: '+0d',
 		   autoclose: true
 		});
-		
+	@role(['cphl_sample_reception']) 
 		$(".sample").click(function(){
 			var sampleid = $(this).attr('id');
 			$('#samplemodal_' + sampleid).modal('show');
@@ -71,6 +71,7 @@
         if (value.length==0) table.search('').draw();
 
     });
+    @endrole
 
     //on selecting a hub, get the facilities it serves
     $("select[name='hubid']").change(function(){
@@ -87,13 +88,13 @@
           }
         });
       });
-
-      $('.rec_sample').click(function(event){
-          event.preventDefault();
+    
+      $("#listtable").on("click", ".rec_sample", function(eve) {
+          eve.preventDefault();
           $('#no_samples #the_id').val(event.target.id);
           $('#no_samples').modal('show');
       });	
-	} );
+	});
 	
 </script> 
 @append
@@ -217,9 +218,9 @@
         @endrole
 
         @role(['cphl_sample_reception'])
-       @if($sample->status < 7)
-        <a href="{{ route('sampletracking.receivesample',$sample->id) }}" id="{{$sample->id}}" class="rec_sample">Receive</a>
-       @endif
+           @if($sample->status < 7)
+            <a href="{{ route('sampletracking.receivesample',$sample->id) }}" id="{{$sample->id}}" class="rec_sample">Receive</a>
+           @endif
         @endrole
         </td>
         
@@ -272,7 +273,7 @@
             <div class="form-group">
                 <div>
                   {{ Form::hidden('type', 1) }}
-                    <button type="submit" id="submit_form" class="btn btn-primary">Submit </button>
+                    <button type="submit" id="submit_this_form" class="btn btn-primary">Submit </button>
                     </button>
                 </div>
             </div>
@@ -290,7 +291,7 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">Number of samples</h4>
+        <h4 class="modal-title">Enter Number of samples</h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
@@ -300,7 +301,7 @@
         {{ Form::open(array('route' => 'samples.receivesmallpackage', 'class' => '', 'id' => 'no_s')) }}
             {{ csrf_field() }}
           <div class="form-group">
-              <label for="insurance" class="control-label">Barcode</label>
+              <label for="insurance" class="control-label">No. Samples</label>
 
               <div>
                 {{ Form::text('numberofsamples', old('numberofsamples'), array('class' => 'form-control', 'id' => 'number_of_samples')) }}

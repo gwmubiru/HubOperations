@@ -22,8 +22,9 @@ class HubController extends Controller {
     public function index() {
 		$can_delete_facility = Entrust::can('delete-facility');
 		$can_update_facility = Entrust::can('Update_facility');
-		$query = "SELECT f.id, f.name, f.hubname, f.address, hr.name as healthregion, d.name as `district` FROM facility f
+		$query = "SELECT f.id, f.name, i.name as 'ip', f.hubname, f.address, hr.name as healthregion, d.name as `district` FROM facility f
 	INNER JOIN healthregion hr ON(f.healthregionid = hr.id AND ISNULL(f.parentid))
+	LEFT JOIN organization i ON(i.id = f.ipid)
     INNER JOIN district d ON (f.districtid = d.id)
 		WHERE f.id != ''
 		ORDER BY f.name ASC";

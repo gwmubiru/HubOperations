@@ -6,9 +6,33 @@
 @append
 @section('listpagejs') 
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script> 
+<script src="{{ asset('js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('js/jszip.min.js') }}"></script>
+<script src="{{ asset('js/pdfmake.min.js') }}"></script>
+<script src="{{ asset('js/vfs_fonts.js') }}"></script>
+<script src="{{ asset('js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('js/buttons.colVis.min.js') }}"></script>
 <script>
 		$(document).ready(function() {
-			$('#listtable').DataTable();
+			$('#listtable').DataTable( {
+        dom: 'Bflrtip',
+        buttons: [
+          
+          {
+            extend: 'excelHtml5',
+            exportOptions: {
+              columns: ':visible'
+            }
+          },
+          {
+            extend: 'pdfHtml5',
+            exportOptions: {
+              columns: ':visible'
+            }
+          },
+          'colvis'
+        ]
+      } );
 		} );
 	</script> 
 @append

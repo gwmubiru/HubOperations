@@ -43,7 +43,7 @@
         var value = $('.dataTables_filter input').val();
         //console.log(value); // <-- the value
     }); 
-
+     @role(['cphl_sample_reception']) 
     $('.dataTables_filter input').unbind().keyup(function() {
         var value = $(this).val();
         //only start to search if string is at least 12 characters
@@ -64,7 +64,7 @@
         if (value.length==0) table.search('').draw();
 
     });
-
+    @endrole
     //on selecting a hub, get the facilities it serves
     $("select[name='hubid']").change(function(){
       var hubid = $(this).val();
